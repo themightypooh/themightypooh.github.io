@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pooh — game & tools developer</title>
+<meta name="description" content="Game and tools developer for s&box. Geppetto (Effigy + Marionette), wavegoo, Survey Sentence, Midnight AM and more.">
+<meta property="og:title" content="pooh — game & tools developer">
+<meta property="og:description" content="Editors, games and desktop software, mostly for s&box.">
+<meta property="og:image" content="https://themightypooh.github.io/img/wavegoo-poster.jpg">
+<meta name="theme-color" content="#090a0d">
+<link rel="preload" href="fonts/WavegooRoundsquare.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <canvas id="dots" aria-hidden="true"></canvas>
+  <div class="hero-inner wrap">
+    <p class="status"><span class="pulse"></span>Open to work: full-time, contract &amp; freelance</p>
+    <h1>pooh</h1>
+    <p class="lede">Game &amp; tools developer. I build <b>editors</b>, <b>games</b> and <b>desktop software</b>, mostly for <a href="https://sbox.game/pooh">s&amp;box</a> in C#.</p>
+    <nav class="links">
+      <a class="btn" href="#work">See the work</a>
+      <a class="btn ghost" href="https://github.com/themightypooh">GitHub</a>
+      <a class="btn ghost" href="https://sbox.game/pooh">sbox.game</a>
+      <!-- CONTACT: add email / LinkedIn here -->
+    </nav>
+  </div>
+</header>
+
+<main id="work">
+
+  <section class="feature wrap">
+    <div class="feature-head">
+      <p class="tag released">Released · open source</p>
+      <h2>Geppetto</h2>
+      <p class="sub">Editor tools for s&amp;box: model, rig and animate without leaving the engine.</p>
+    </div>
+    <div class="feature-body">
+      <div class="gallery two">
+        <img src="img/geppetto-models.webp" alt="Six procedurally built rigged characters made with Effigy" loading="lazy" width="1080" height="720">
+        <img src="img/geppetto-subd.webp" alt="Effigy primitives with cage and subdivision previews" loading="lazy" width="1200" height="600">
+      </div>
+      <div class="copy">
+        <h3>Effigy: a parametric modeller</h3>
+        <ul>
+          <li>Five workspaces: CAD with an editable feature tree, Model (edit, sculpt, retopo), Paint, Rig and Clothing. Exports a real <code>.vmdl</code>.</li>
+          <li>Full edit-mode toolkit: extrude, inset, bevel, loop cut, knife, bridge, live modifiers, UVs and weight painting.</li>
+          <li>Clothing is built from the body's bones, so it refits when the body changes. Also exports live cloth.</li>
+          <li>The <code>.effigy</code> format is plain text with one line per feature, so it diffs cleanly in git.</li>
+          <li>The modelling kernel has no engine dependency. It runs headlessly from C#, build scripts or a CLI, backed by a large test suite.</li>
+        </ul>
+        <h3>Marionette: an animation editor</h3>
+        <ul>
+          <li>Pose bones, keyframe with easing curves and auto-key, then bake clips or play them in game.</li>
+          <li>Two-bone IK, joint limits, and prop collision while posing.</li>
+          <li>Fits a custom model to the player skeleton and writes a walkable test scene in one click.</li>
+        </ul>
+        <p class="actions">
+          <a class="btn" href="https://sbox.game/pooh/geppetto">Get it on sbox.game</a>
+          <a class="btn ghost" href="https://github.com/themightypooh/Geppetto">Source</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature wrap">
+    <div class="feature-head">
+      <p class="tag released">Open source · daily driver</p>
+      <h2>wavegoo + goonotes</h2>
+      <p class="sub">My own desktop shell for KDE Plasma on Wayland, written from scratch in Quickshell (QML + GLSL).</p>
+    </div>
+    <div class="feature-body">
+      <figure class="video">
+        <video src="media/wavegoo-demo.mp4" poster="img/wavegoo-poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
+      </figure>
+      <div class="copy">
+        <ul>
+          <li><b>The taskbar is a physics simulation.</b> Every dot is a mass on a spring, coupled to its neighbours like a membrane. The cursor plows through them and clicks send out shockwaves. The sim writes offsets into a texture and a fragment shader draws them, and it sleeps when idle.</li>
+          <li><b>Start menu as an arc fan</b> that unfolds from the orb, with category carousels on three rings and search in the hub.</li>
+          <li><b>A KWin bridge</b> in Python and D-Bus provides the task list, because Wayland clients don't get one from KWin.</li>
+          <li><b>goonotes:</b> sticky notes plus a steel file cabinet drawn like Amiga AGA pixel art, with ordered dithering in a shader. Drag a note over it and the drawers crack open.</li>
+          <li><b>Phone sync (in progress):</b> a sync server with per-note merging, conflict copies and tombstones keeps the desktop and an Android app in step.</li>
+          <li>The UI font is generated procedurally by a Python script.</li>
+        </ul>
+        <div class="gallery two small">
+          <img src="img/wavegoo-menu.webp" alt="wavegoo arc-fan start menu open over the desktop" loading="lazy" width="1600" height="817">
+          <img src="img/goonotes-drawer.webp" alt="goonotes drawer with categories and notes" loading="lazy" width="1600" height="817">
+        </div>
+        <p class="actions"><a class="btn" href="https://github.com/themightypooh/wavegoo">View on GitHub</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2 class="section-title">Games in progress</h2>
+    <div class="cards">
+
+      <article class="card">
+        <img class="cover" src="img/survey-printers.webp" alt="Eight 3D-printer designs for Survey Sentence" loading="lazy" width="1600" height="1067">
+        <p class="tag">s&amp;box · WIP</p>
+        <h3>Survey Sentence</h3>
+        <p>A prisoner, sealed alone in a windowless pod, finds and "prints" subjects using a sonar scope and a 3D printer. It's a PS1-style remake of my game jam entry <a href="https://sbox.game/pooh/deep_survey">Deep Survey</a>, which you can play now.</p>
+        <ul>
+          <li>The sonar scope turns an outside camera into echolocation through a depth post-process, displayed on a curved CRT.</li>
+          <li>Orders type onto the glass like a teleprinter, in baked bitmap fonts.</li>
+          <li>A true first-person body, with animation takes checked for how fast they swing the camera.</li>
+          <li>A layered sound director with ducking and loudness (LUFS) targets.</li>
+        </ul>
+        <div class="thumbs">
+          <img src="img/survey-looks.webp" alt="Eight render-style studies of the scope station" loading="lazy">
+          <img src="img/survey-suits.webp" alt="Diving-suit design lineup" loading="lazy">
+          <img src="img/survey-ship.webp" alt="Pod interior shots" loading="lazy">
+        </div>
+      </article>
+
+      <article class="card">
+        <img class="cover" src="img/mam-mic.webp" alt="Midnight AM studio microphone render" loading="lazy" width="1200" height="900">
+        <p class="tag">s&amp;box · WIP</p>
+        <h3>Midnight AM</h3>
+        <p>A cosy first-person game where you host a late-night radio show over an 8-hour shift in real time: take phone-in callers, spin vinyl and decorate the studio.</p>
+        <ul>
+          <li>An in-game retro computer with around 20 apps: a casino, chess, minesweeper, a terminal, a mixer and a vinyl press.</li>
+          <li>A built-in synth engine, song sequencer, voice recorder and WAV writer.</li>
+          <li>A fully interactive turntable: tonearm, pitch slider, lid and sleeves.</li>
+          <li>First-person arms with two-bone IK and pose blending, plus a save system with round-trip tests.</li>
+        </ul>
+        <div class="thumbs"><img src="img/mam-speaker.webp" alt="Orb speaker prop" loading="lazy"></div>
+      </article>
+
+      <article class="card">
+        <img class="cover" src="img/arcade-tokens.webp" alt="Token changer machine from Inside The Arcade" loading="lazy" width="1200" height="900">
+        <p class="tag">s&amp;box · WIP</p>
+        <h3>Inside The Arcade</h3>
+        <p>A first-person retro arcade where every cabinet runs its own playable game, and many let you go <i>inside</i> them.</p>
+        <ul>
+          <li>Around 20 cabinets: pinball (four tables), skee-ball, a physics claw machine, air hockey, a fighter, a rally game, a shmup, light-gun games and more.</li>
+          <li>Custom pinball physics with dot-matrix and video displays.</li>
+          <li>Games are tested headlessly with simulations and soak tests.</li>
+          <li>Per-station visibility gating and hashed screen redraws keep the busy floor at 60 fps.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <img class="cover" src="img/cookin-booth.webp" alt="Diner booth model with stitching detail" loading="lazy" width="1200" height="1260">
+        <p class="tag">s&amp;box · prototype</p>
+        <h3>Cookin</h3>
+        <p>A physics-driven short-order cook sim. Step one: crack an egg on the rail, cook it, and get it off the flattop in one piece.</p>
+        <ul>
+          <li>The eggshell fractures through a bond graph with hit-point falloff and flood-fill clustering.</li>
+          <li>The egg white is a rope-and-volume slime that necks and pinches off.</li>
+          <li>The yolk is a pressurised membrane, built as an icosphere with distance and volume constraints, and it bursts when strained.</li>
+        </ul>
+        <div class="thumbs"><img src="img/cookin-fryer.webp" alt="Commercial fryer model" loading="lazy"></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2 class="section-title">Lab</h2>
+    <div class="lab">
+      <article>
+        <h3>Grip solver</h3>
+        <p>Hand-grip authoring for Marionette. A custom asset stores blendable finger poses, and the solver closes the fingers onto the held object by testing against the hand's skin, not bone capsules. The core has no engine dependency and is unit-tested.</p>
+      </article>
+      <article>
+        <h3>VT-07</h3>
+        <p>A VR mech-cockpit pod at 1:1 scale. You climb in, the seat swings out to meet you, and you run the start-up ritual: initialize, five overhead toggles, ignition. It's now a cabinet in the arcade.</p>
+      </article>
+      <article>
+        <h3>goonotes sync</h3>
+        <p>A standard-library-only Python sync server. Per note, the newest edit wins. If both sides changed a note, the losing edit is kept as a conflict copy, and deletions travel as tombstones. An Android client is in progress.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2 class="section-title">Toolbox</h2>
+    <ul class="skills">
+      <li>C#</li><li>s&amp;box / Source 2</li><li>Editor tooling</li><li>Gameplay systems</li><li>Physics &amp; simulation</li>
+      <li>GLSL shaders</li><li>QML / Quickshell</li><li>Python</li><li>Blender (modelling + scripting)</li>
+      <li>Procedural generation</li><li>Automated testing</li><li>Linux · KDE · Wayland</li><li>Git</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>Want to work together? <!-- CONTACT --> Find me on <a href="https://github.com/themightypooh">GitHub</a> or <a href="https://sbox.game/pooh">sbox.game</a>.</p>
+  <p class="fine">© 2026 pooh</p>
+</footer>
+
+<script src="dots.js" defer></script>
+</body>
+</html>
