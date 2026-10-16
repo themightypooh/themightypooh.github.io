@@ -42,6 +42,40 @@
   function toScreen(e) { const r = screenEl.getBoundingClientRect(); return { x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale }; }
   screenEl.addEventListener('pointermove', e => { const p = toScreen(e); pointer.x = p.x; pointer.y = p.y; pointer.in = true; }, true);
   screenEl.addEventListener('pointerleave', () => { pointer.in = false; });
+  // clicking or dragging something brings it to the front (kept under the bar at z 50)
+  let zTop = 20; const stack = new Set();
+  function raise(node) {
+    if (+node.style.zIndex === zTop) return;
+    node.style.zIndex = ++zTop; stack.add(node);
+    if (zTop > 45) { zTop = 20; [...stack].filter(n => n.isConnected).sort((a, b) => a.style.zIndex - b.style.zIndex).forEach(n => { n.style.zIndex = ++zTop; }); }
+  }
+  // the desktop only takes the scroll wheel once you've clicked into it, so scrolling the page past it still works
+  let engaged = false;
+  screenEl.addEventListener('pointerdown', () => { engaged = true; }, true);
+  document.addEventListener('pointerdown', e => { if (!screenEl.contains(e.target)) engaged = false; }, true);
+  let dragging = false;
+  // drag a desktop widget from anywhere on it; a press that moves past a few px becomes a drag and eats the click
+  function draggable(node, pos, w, h) {
+    node.addEventListener('pointerdown', e => {
+      raise(node);
+      if (e.button !== 0 || e.target.closest('button, input, textarea')) return;
+      const p0 = toScreen(e), x0 = pos.x, y0 = pos.y; let moved = false;
+      const move = ev => {
+        const p = toScreen(ev);
+        if (!moved) { if (Math.hypot(p.x - p0.x, p.y - p0.y) < 6) return; moved = true; dragging = true; whyHide(); node.classList.add('dragging'); }
+        pos.x = clamp(Math.round(x0 + p.x - p0.x), -w + 80, SW - 80); pos.y = clamp(Math.round(y0 + p.y - p0.y), 0, SH - Math.min(h, 120));
+        node.style.left = pos.x + 'px'; node.style.top = pos.y + 'px';
+      };
+      const up = () => {
+        removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+        if (!moved) return;
+        dragging = false; node.classList.remove('dragging');
+        const eat = ev => { ev.stopPropagation(); ev.preventDefault(); };
+        node.addEventListener('click', eat, { capture: true, once: true }); setTimeout(() => node.removeEventListener('click', eat, { capture: true }), 0);
+      };
+      addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
+    });
+  }
 
   const blurbs = {
     bar: ['wavegoo', 'The taskbar is a grain simulation: sand rides a wave, the cursor shoves it around and goo blobs rise off it. The orb opens the start menu.'],
@@ -55,7 +89,38 @@
     drawer: ['pinned apps', 'The drawer grows up out of the dots and shoves them aside.']
   };
   function explain(k) { const [t, b] = blurbs[k]; info.innerHTML = ''; const s = el('strong', '', info); s.textContent = t; info.append(b); }
-  function blurb(node, k) { node.addEventListener('pointerenter', () => explain(k)); node.addEventListener('focusin', () => explain(k)); }
+  // why I made each thing: a speech bubble that grows off whatever you hover
+  const whys = {
+    bar: 'Stock Plasma felt dead, so I wrote my own shell from scratch. Now the taskbar is sand riding a wave and I get to shove it around.',
+    note: 'I forget everything unless it\'s in my face, and note apps are way too heavy for "buy milk". So: sticky notes, in the Amiga pixel art I love.',
+    cabinet: 'Notes I\'m done with but don\'t want to lose. Filing them in a drawer feels like a real desk, not another list.',
+    board: 'The stuff I can\'t afford to forget gets pinned where I\'ll actually see it.',
+    hourglass: 'I lose track of time when I\'m working, and numbers ticking down never register. Sand draining does.',
+    visits: 'Job hunting is quiet. Watching this go up means someone actually looked at my work.',
+    linework: 'I can\'t draw for shit, but I need quick sketches for levels and props. Krita\'s overkill and I loved Concepts, so I made my own that cleans up my wobbly lines.'
+  };
+  const whyEl = el('div', 'wbub', screenEl);
+  let whyT = 0, whyNode = null;
+  function whyHide() { clearTimeout(whyT); whyEl.classList.remove('open'); whyNode = null; }
+  function whyShow(node, k, at) {
+    const r = node.getBoundingClientRect(), sr = screenEl.getBoundingClientRect();
+    const L = (r.left - sr.left) / scale, T = (r.top - sr.top) / scale, R = (r.right - sr.left) / scale, B = (r.bottom - sr.top) / scale;
+    whyEl.textContent = whys[k]; whyEl.className = 'wbub'; const bw = 400, bh = whyEl.offsetHeight || 140;
+    let x, y, side;
+    if (at) { side = 'down'; x = clamp(at.x - 40, 10, SW - bw - 10); y = T - bh - 22; }
+    else if (R + 22 + bw < SW - 10) { side = 'left'; x = R + 22; y = clamp(T + 20, 10, SH - 140 - bh); }
+    else if (L - 22 - bw > 10) { side = 'right'; x = L - 22 - bw; y = clamp(T + 20, 10, SH - 140 - bh); }
+    else { side = 'up'; x = clamp(L + 40, 10, SW - bw - 10); y = Math.min(B + 22, SH - 140 - bh); }
+    whyEl.style.left = x + 'px'; whyEl.style.top = y + 'px';
+    whyEl.style.setProperty('--tail', (side === 'down' || side === 'up' ? clamp((at ? at.x : L + 60) - x, 20, bw - 30) : clamp(T + 40 - y, 16, bh - 30)) + 'px');
+    whyEl.className = 'wbub open ' + side; whyNode = node;
+  }
+  function whyOn(node, k, atPointer) {
+    node.addEventListener('pointerenter', () => { clearTimeout(whyT); if (whyNode === node || dragging || dragNote) return; whyT = setTimeout(() => { if (!dragging && !dragNote) whyShow(node, k, atPointer && { x: pointer.x }); }, 300); });
+    node.addEventListener('pointerleave', () => { clearTimeout(whyT); whyT = setTimeout(whyHide, 150); });
+    node.addEventListener('pointerdown', whyHide);
+  }
+  function blurb(node, k) { node.addEventListener('pointerenter', () => explain(k)); node.addEventListener('focusin', () => explain(k)); if (whys[k]) whyOn(k === 'bar' ? barEl : node, k, k === 'bar'); }
   explain('bar');
 
   // ---- springs, like Qt's SpringAnimation (spring = stiffness, damping = how fast it settles) ----
@@ -509,7 +574,8 @@
   });
   menuEl.addEventListener('wheel', e => { e.preventDefault(); if (spins()) L.spin += e.deltaY > 0 ? 2 : -2; }, { passive: false });
   document.addEventListener('keydown', e => {
-    if (!L.open) return;
+    if (!L.open || !(screenEl.matches(':hover') || screenEl.contains(document.activeElement))) return;
+    if (document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
     if (e.key === 'Escape') { if (L.query) { L.query = ''; rebuildRings(); select(-1, -1); } else setMenu(false); }
     else if (e.key === 'Enter') { if (!selItem()) select(0, 0); activate(selItem()); }
     else if (e.key === 'Backspace') { L.query = L.query.slice(0, -1); rebuildRings(); if (L.query) select(0, 0); else select(-1, -1); }
@@ -653,7 +719,9 @@
   ];
   function makeNote(o) {
     const n = Object.assign({ x: 120, y: 120, color: 0, cat: '', title: '', text: '', t: 0, pinned: false, armed: false }, o);
-    const root = el('div', 'note', screenEl); n.el = root;
+    n.x = clamp(Math.round(n.x), 0, SW - 300); n.y = clamp(Math.round(n.y), 0, SH - 280 - 130);
+    const root = el('div', 'note', screenEl); n.el = root; raise(root);
+    root.addEventListener('pointerdown', () => raise(root), true);
     n.canvas = el('canvas', '', root);
     const head = el('div', 'note-head', root);
     n.chip = el('button', 'chip', head);
@@ -679,12 +747,13 @@
     n.chip.onclick = () => { const cs = ['', ...cab.cats]; n.cat = cs[(cs.indexOf(n.cat) + 1) % cs.length]; paintNote(n); };
     head.addEventListener('pointerdown', e => {
       if (e.button !== 0 || e.target.closest('button')) return;
-      const p0 = toScreen(e), x0 = n.x, y0 = n.y; head.setPointerCapture(e.pointerId); dragNote = n;
-      const move = ev => { const p = toScreen(ev); n.x = clamp(Math.round(x0 + p.x - p0.x), 0, SW - 300); n.y = clamp(Math.round(y0 + p.y - p0.y), 0, SH - 280); dragAt = p; placeNote(n); };
-      const up = ev => { head.removeEventListener('pointermove', move); head.removeEventListener('pointerup', up); head.removeEventListener('pointercancel', up); dragNote = null; noteDropped(n, toScreen(ev)); };
+      const p0 = toScreen(e), x0 = n.x, y0 = n.y; head.setPointerCapture(e.pointerId); let moved = false;
+      const move = ev => { const p = toScreen(ev); if (!moved) { if (Math.hypot(p.x - p0.x, p.y - p0.y) < 6) return; moved = true; dragNote = n; whyHide(); } n.x = clamp(Math.round(x0 + p.x - p0.x), 0, SW - 300); n.y = clamp(Math.round(y0 + p.y - p0.y), 0, SH - 280); dragAt = p; placeNote(n); };
+      const up = ev => { head.removeEventListener('pointermove', move); head.removeEventListener('pointerup', up); head.removeEventListener('pointercancel', up); if (moved) { dragNote = null; noteDropped(n, toScreen(ev)); } };
       head.addEventListener('pointermove', move); head.addEventListener('pointerup', up); head.addEventListener('pointercancel', up);
     });
     root.addEventListener('pointerenter', () => { n.hover = true; explain('note'); });
+    whyOn(root, 'note');
     root.addEventListener('pointerleave', () => { n.hover = false; });
     root.addEventListener('focusin', () => { n.editing = true; paintNote(n); });
     root.addEventListener('focusout', () => { n.editing = false; paintNote(n); });
@@ -723,16 +792,17 @@
     });
   }
   function newNote(cat = '') {
-    const n = makeNote({ x: 760 + (notes.length % 5) * 36, y: 300 + (notes.length % 5) * 36, color: notes.length % NOTE_PAL.length, cat, text: '' });
+    const n = makeNote({ x: 560 + (notes.length % 5) * 36, y: 140 + (notes.length % 5) * 36, color: notes.length % NOTE_PAL.length, cat, text: '' });
     n.bodyEl.focus();
   }
   function removeNote(n) { n.el.remove(); notes.splice(notes.indexOf(n), 1); }
   function putAway(n) { if (n.cat) cab.file(n, cab.cats.indexOf(n.cat)); else removeNote(n); }
   let dragNote = null, dragAt = { x: 0, y: 0 };
   function noteDropped(n, p) {
-    const i = cab.drawerAt(p.x, p.y);
-    if (i >= 0) { n.cat = cab.cats[i]; cab.file(n, i); return; }
-    if (board.open && board.inCork(p.x, p.y)) pinToBoard(n, p.x - board.x - 60, p.y - board.y - 10);
+    const i = cab.drawerAt(p.x, p.y), onBoard = board.open && board.inCork(p.x, p.y);
+    const z = e => +getComputedStyle(e).zIndex || 0;
+    if (i >= 0 && !(onBoard && z(board.el) > z(cab.el))) { n.cat = cab.cats[i]; cab.file(n, i); return; }
+    if (onBoard) pinToBoard(n, p.x - board.x - 60, p.y - board.y - 10);
   }
 
   // ---- the file cabinet ------------------------------------------------------------
@@ -742,14 +812,14 @@
     const dragOut = 50, crackOut = 10, hoverOut = 120, maxFiles = 6, fileStep = (hoverOut - 16) / (maxFiles - 1), tabH = 14, stagger = 30, shadow = 8;
     const ox = Math.round(hoverOut * kx) + 12, oy = topH + 6, slotW = fw - pad * 2;
     const W = ox + fw + sideW + shadow + 6, H = oy + fh + Math.round(hoverOut * ky) + shadow + 8;
-    const c = { x: 784, y: 203, cats: ['todo', 'ideas', 's&box'], hoverIdx: -1, thunk: -1, bump: 0, dirty: true };
+    const c = { x: 1624, y: 230, cats: ['todo', 'ideas', 's&box'], hoverIdx: -1, thunk: -1, bump: 0, dirty: true };
     c.files = [
       [{ t: 'laundry', c: 4 }, { t: 'fix the bike', c: 1 }, { t: 'reply to emails', c: 0 }],
       [{ t: 'band names', c: 2 }, { t: 'pizza toppings', c: 3 }, { t: 'weekend trip', c: 4 }, { t: 'new hobby', c: 0 }],
       [{ t: 'prop list', c: 1 }, { t: 'level sketch', c: 3 }, { t: 'sound ideas', c: 2 }]
     ];
-    const root = el('div', 'cabinet', screenEl); root.style.left = c.x + 'px'; root.style.top = c.y + 'px'; root.style.width = W + 'px'; root.style.height = H + 'px';
-    blurb(root, 'cabinet');
+    const root = el('div', 'cabinet', screenEl); c.el = root; root.style.left = c.x + 'px'; root.style.top = c.y + 'px'; root.style.width = W + 'px'; root.style.height = H + 'px';
+    blurb(root, 'cabinet'); draggable(root, c, W, H);
     const canvas = el('canvas', '', root);
     const snap = v => Math.round(v / 2) * 2;
     const slotX = () => ox + pad, slotY = i => oy + pad + i * (dh + gap);
@@ -766,7 +836,8 @@
       return h;
     });
     let leaveT = 0;
-    function setHover(i) { clearTimeout(leaveT); if (c.hoverIdx !== i) { c.hoverIdx = i; c.dirty = true; } }
+    let peekT = 0;
+    function setHover(i) { clearTimeout(leaveT); clearTimeout(peekT); if (c.hoverIdx !== i) { c.hoverIdx = i; c.dirty = true; } }
     root.addEventListener('pointerleave', () => { leaveT = setTimeout(() => { c.hoverIdx = -1; c.dirty = true; }, 320); });
     root.addEventListener('pointerenter', () => clearTimeout(leaveT));
     // clicking a folder takes that note back out onto the desktop
@@ -794,7 +865,7 @@
       c.files[i].unshift({ t: n.title || firstLine(n), c: n.color }); removeNote(n);
       c.thunk = i; c.bumpT = performance.now(); c.dirty = true;
     };
-    c.peek = () => { setHover(0); setTimeout(() => { c.hoverIdx = -1; c.dirty = true; }, 2200); };
+    c.peek = () => { setHover(0); peekT = setTimeout(() => { c.hoverIdx = -1; c.dirty = true; }, 2200); };
     function want(i) {
       const dragging = !!dragNote, near = dragging && Math.hypot(dragAt.x - (c.x + ox + fw / 2), dragAt.y - (c.y + oy + fh / 2)) < 420;
       const target = dragging ? c.drawerAt(dragAt.x, dragAt.y) : -1;
@@ -865,18 +936,18 @@
 
   // ---- the corkboard ------------------------------------------------------------------
   const board = (() => {
-    const b = { x: 271, y: 492, bw: 440, bh: 400, open: false, cards: [], dirty: true };
+    const b = { x: 16, y: 400, bw: 440, bh: 400, open: false, cards: [], dirty: true };
     const frame = 10, topF = 26, cw = 120, ch = 80, cork = { x: frame, y: topF, w: 440 - frame * 2, h: 400 - topF - frame };
     const pinCols = ['#ff8800', '#8a84b8', '#6f9a8a', '#c4a06c', '#b38a96', '#a3aec0'];
-    const root = el('div', 'board', screenEl); root.style.left = b.x + 'px'; root.style.top = b.y + 'px';
-    blurb(root, 'board');
+    const root = el('div', 'board', screenEl); b.el = root; root.style.left = b.x + 'px'; root.style.top = b.y + 'px';
+    blurb(root, 'board'); draggable(root, b, b.bw, b.bh);
     const canvas = el('canvas', '', root);
     const plate = el('div', 'board-text', root); plate.style.cssText += 'left:10px;top:5px;width:104px;'; plate.textContent = 'CORKBOARD';
     const xbtn = el('button', 'board-x', root); xbtn.setAttribute('aria-label', 'Close corkboard');
     el('div', 'board-text', root).style.cssText += 'right:8px;top:3px;width:20px;line-height:20px;'; root.lastChild.textContent = 'X';
     const empty = el('div', 'board-text', root); empty.style.cssText += `left:0;right:0;top:${cork.y + cork.h / 2 - 14}px;color:#ffb85c;font-size:11px;white-space:pre;line-height:14px`; empty.textContent = 'DROP A NOTE HERE\nTO KEEP IT IN SIGHT';
     xbtn.onclick = () => b.toggle(false);
-    b.toggle = on => { b.open = on === undefined ? !b.open : on; root.classList.toggle('open', b.open); if (b.open) { b.dirty = true; explain('board'); } };
+    b.toggle = on => { b.open = on === undefined ? !b.open : on; root.classList.toggle('open', b.open); if (b.open) { raise(root); b.dirty = true; explain('board'); } };
     b.inCork = (sx, sy) => { const x = sx - b.x, y = sy - b.y; return x >= cork.x && x <= cork.x + cork.w && y >= cork.y && y <= cork.y + cork.h; };
     const textEls = [];
     b.add = (n, x, y) => {
@@ -929,19 +1000,25 @@
   // VISITS (~/.config/quickshell/visits)
   // =================================================================================
   const visits = (() => {
-    const root = el('div', 'visits', screenEl); root.style.left = (SW - 230 - 40) + 'px'; root.style.top = '120px';
+    const root = el('div', 'visits', screenEl); root.style.left = '1642px'; root.style.top = '40px';
     root.innerHTML = '<div class="vbox"><canvas width="226" height="14"></canvas><div class="vlabel">PORTFOLIO VISITS</div><div class="vnum">...<span class="vplus">+1</span></div><div class="vsub">LIVE FROM THIS SITE</div></div>';
     root.tabIndex = 0; root.setAttribute('role', 'button'); root.setAttribute('aria-label', 'Portfolio visit counter');
-    blurb(root, 'visits');
+    blurb(root, 'visits'); draggable(root, { x: 1642, y: 40 }, 230, 120);
     const g = root.querySelector('canvas').getContext('2d');
     for (let i = 0; i < 700; i++) { const x = Math.random() * 226, y = Math.random() * 14; if (y < 14 * (0.4 + 0.3 * Math.sin(x / 18))) continue; g.fillStyle = GRAINS[i % 3]; g.globalAlpha = 0.5 + Math.random() * 0.5; g.fillRect(x, y, 2, 2); }
     const num = root.querySelector('.vnum'), plus = root.querySelector('.vplus'), sub = root.querySelector('.vsub');
     let count = null;
     const show = () => { num.firstChild.textContent = count === null ? '...' : count.toLocaleString('en-US'); };
-    fetch('https://abacus.jasoncameron.dev/get/themightypooh-portfolio/visitors').then(r => r.json()).then(j => { count = j.value; show(); if (!count) sub.textContent = 'WAITING FOR THE FIRST VISIT'; })
-      .catch(() => { sub.textContent = "CAN'T REACH COUNTER"; sub.style.color = '#f09595'; });
-    root.addEventListener('click', () => {   // preview the new-visit flash
-      plus.textContent = '+1'; root.classList.add('flash'); setTimeout(() => root.classList.remove('flash'), 120);
+    let baseSub = 'LIVE FROM THIS SITE';
+    const setSub = t => { baseSub = t; sub.textContent = t; };
+    fetch('https://abacus.jasoncameron.dev/get/themightypooh-portfolio/visitors').then(r => r.json()).then(j => { count = j.value; show(); if (!count) setSub('WAITING FOR THE FIRST VISIT'); })
+      .catch(() => { setSub("CAN'T REACH COUNTER"); sub.style.color = '#f09595'; });
+    let previewT = 0;
+    root.addEventListener('click', () => {   // preview a new visit: the real count only goes up on the live site, once per browser a day
+      clearTimeout(previewT); plus.textContent = '+1'; root.classList.add('flash', 'preview'); setTimeout(() => root.classList.remove('flash'), 120);
+      if (count !== null) num.firstChild.textContent = (count + 1).toLocaleString('en-US');
+      sub.textContent = 'PREVIEW, NOT A REAL VISIT';
+      previewT = setTimeout(() => { root.classList.remove('preview'); show(); sub.textContent = baseSub; }, 2200);
       const r = root.getBoundingClientRect(), s = screenEl.getBoundingClientRect();
       shock((r.left - s.left) / scale + 60, headroom, 120);
     });
@@ -990,8 +1067,8 @@
   for (let i = 0; i <= STEPS; i++) shapes.push(shapeAt(i / STEPS));
   function shapeLerp(f) { const x = clamp(f, 0, 1) * STEPS, i = Math.min(STEPS - 1, Math.floor(x)), t = x - i; return shapes[i].map((v, k) => v + (shapes[i + 1][k] - v) * t); }
 
-  const hgEl = el('div', 'hourglass', screenEl); hgEl.style.left = '1622px'; hgEl.style.top = '239px';
-  blurb(hgEl, 'hourglass');
+  const hgEl = el('div', 'hourglass', screenEl); hgEl.style.left = '1450px'; hgEl.style.top = '180px';
+  blurb(hgEl, 'hourglass'); draggable(hgEl, { x: 1450, y: 180 }, 200, 400);
   const glassEl = el('div', 'glass', hgEl); glassEl.tabIndex = 0; glassEl.setAttribute('role', 'button'); glassEl.setAttribute('aria-label', 'Hourglass: start or pause');
   const glassCanvas = el('canvas', '', glassEl); glassCanvas.width = hg.gw; glassCanvas.height = hg.gh;
   const glassGL = glProgram(glassCanvas, MD_SHADERS.GLASS_FRAG);
@@ -1014,7 +1091,7 @@
   }
   glassEl.addEventListener('click', hgToggle);
   glassEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hgToggle(); } });
-  hgEl.addEventListener('wheel', e => { e.preventDefault(); const d = e.deltaY < 0 ? 60 : -60; if (hg.mode === 'running') { hg.endAt += d * 1000; hg.duration += d; } else if (hg.mode === 'paused') { hg.left += d; hg.duration += d; } else hg.duration = clamp(hg.duration + d, 60, 99 * 3600); hg.duration = Math.max(1, hg.duration); hg.dirty = true; }, { passive: false });
+  hgEl.addEventListener('wheel', e => { if (!engaged) return; e.preventDefault(); const d = e.deltaY < 0 ? 60 : -60; if (hg.mode === 'running') { hg.endAt += d * 1000; hg.duration += d; } else if (hg.mode === 'paused') { hg.left += d; hg.duration += d; } else hg.duration = clamp(hg.duration + d, 60, 99 * 3600); hg.duration = Math.max(1, hg.duration); hg.dirty = true; }, { passive: false });
   hgEl.addEventListener('pointerenter', () => { hg.hovered = true; }); hgEl.addEventListener('pointerleave', () => { hg.hovered = false; });
   function hgStep(dt) {
     const moving = hg.mode === 'running' || hg.mode === 'pouring' || hg.tailing;
@@ -1053,7 +1130,7 @@
   // =================================================================================
   const lw = (() => {
     const T = { s0: '#141418', s2: '#42454b', s4: '#757980', s5: '#8f949a', s6: '#aaaeb3', s8: '#dfe1e3', s9: '#f4f5f6', orange: '#ff8800', paper: '#efeee6' };
-    const w = { x: 300, y: 120, ww: 1180, wh: 720, open: false };
+    const w = { x: 370, y: 110, ww: 1180, wh: 720, open: false };
     const root = el('div', 'lw-win', screenEl);
     const title = el('div', 'lw-title', root, 'Linework');
     const wb = el('div', 'lw-wbtns', title);
@@ -1167,7 +1244,7 @@
       if (tool === '__back') { openGroup = -1; animT(0); return; }
       setTool(tool);
     });
-    wheel.addEventListener('wheel', e => { e.preventDefault(); st.size = clamp(st.size + (e.deltaY < 0 ? 0.5 : -0.5), 0.5, 40); syncSliders(); drawWheel(); }, { passive: false });
+    wheel.addEventListener('wheel', e => { if (!engaged) return; e.preventDefault(); st.size = clamp(st.size + (e.deltaY < 0 ? 0.5 : -0.5), 0.5, 40); syncSliders(); drawWheel(); }, { passive: false });
 
     // ---- the brush panel (BrushPanel.qml): size / opacity / smoothing ----
     const bp = el('div', 'lwin lw-brush', app); bp.style.left = '244px'; bp.style.top = (AH - 19 - 178) + 'px';
@@ -1256,17 +1333,18 @@
     const finish = () => { clearTimeout(holdT); if (panning) { panning = null; return; } if (!st.cur) return; st.strokes.push(st.cur); st.redo = []; st.cur = null; paint(); };
     paper.addEventListener('pointerup', finish); paper.addEventListener('pointercancel', finish);
     paper.addEventListener('wheel', e => {
-      e.preventDefault();
+      if (!engaged) return; e.preventDefault();
       const r = paper.getBoundingClientRect(), mx = (e.clientX - r.left) / scale, my = (e.clientY - r.top) / scale, v = st.view, k = e.deltaY < 0 ? 1.15 : 1 / 1.15, z = clamp(v.z * k, 0.25, 8);
       v.x = mx - (mx - v.x) * z / v.z; v.y = my - (my - v.y) * z / v.z; v.z = z; paint();
     }, { passive: false });
     function undo() { if (st.strokes.length) { st.redo.push(st.strokes.pop()); paint(); } }
     function redo() { if (st.redo.length) { st.strokes.push(st.redo.pop()); paint(); } }
     function exportPng() { paper.toBlob(b => { if (!b) return; const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = 'linework.png'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 1000); }); }
+    let replayRun = 0;
     function replay() {
       const all = st.strokes.slice(); if (!all.length) return;
-      st.strokes = []; let i = 0;
-      const next = () => { if (i < all.length) { st.strokes.push(all[i++]); paint(); setTimeout(next, 180); } };
+      st.strokes = []; let i = 0; const run = ++replayRun;
+      const next = () => { if (run === replayRun && i < all.length) { st.strokes.push(all[i++]); paint(); setTimeout(next, 180); } };
       next();
     }
     document.addEventListener('keydown', e => {
@@ -1278,22 +1356,25 @@
       else if (!ctrl && e.key === 'b') setTool('pen'); else if (!ctrl && e.key === 'e') setTool('eraser');
     });
     document.addEventListener('keyup', e => { if (e.key === ' ') space = false; });
+    window.addEventListener('blur', () => { space = false; });
 
     // ---- the window: drag by its title bar, minimise to the taskbar ----
     title.addEventListener('pointerdown', e => {
       if (e.target.closest('button')) return;
       const p0 = toScreen(e), x0 = w.x, y0 = w.y; title.setPointerCapture(e.pointerId);
       title.onpointermove = ev => { const p = toScreen(ev); w.x = clamp(x0 + p.x - p0.x, -AW + 120, SW - 120); w.y = clamp(y0 + p.y - p0.y, 0, SH - 160); root.style.left = w.x + 'px'; root.style.top = w.y + 'px'; };
-      title.onpointerup = () => { title.onpointermove = null; };
+      title.onpointerup = title.onpointercancel = () => { title.onpointermove = null; };
     });
     const api = {
       get open() { return w.open; },
-      show(on) { w.open = on; root.classList.toggle('open', on); if (on) { paint(); drawWheel(); syncSliders(); explain('linework'); } api.onChange && api.onChange(on); },
+      show(on) { w.open = on; root.classList.toggle('open', on); if (on) { raise(root); paint(); drawWheel(); syncSliders(); explain('linework'); } api.onChange && api.onChange(on); },
       toggle() { api.show(!w.open); }
     };
     minB.onclick = () => api.show(false);
-    closeB.onclick = () => { api.show(false); st.strokes = []; st.redo = []; };
+    closeB.onclick = () => { replayRun++; api.show(false); st.strokes = []; st.redo = []; };
     root.addEventListener('pointerenter', () => explain('linework'));
+    root.addEventListener('pointerdown', () => raise(root), true);
+    whyOn(title, 'linework');
     syncSliders(); drawWheel(); paint();
     return api;
   })();
@@ -1309,12 +1390,14 @@
   notesIcons.forEach(f => f.node.addEventListener('pointerleave', tipOff));
 
   // ---- the desktop as it is on the real machine ------------------------------------------
-  makeNote({ x: 120, y: 120, color: 3, title: 'welcome', text: 'this is my desktop,\nshrunk down.\n\ndrag me by the header.\ndrop me on the cabinet\nto file me away.' });
-  makeNote({ x: 615, y: 2, color: 4, cat: 'todo', title: '', text: '- open the start menu\n- flip the hourglass\n- draw something\n- pin a note to the board' });
+  makeNote({ x: 40, y: 40, color: 3, title: 'welcome', text: 'this is my desktop,\nshrunk down.\n\ndrag me by the header.\ndrop me on the cabinet\nto file me away.' });
+  makeNote({ x: 370, y: 64, color: 4, cat: 'todo', title: '', text: '- open the start menu\n- flip the hourglass\n- draw something\n- pin a note to the board' });
   board.add({ title: 'hello', text: 'notes pinned here\nstay in sight', color: 2 });
   board.add({ title: 'click me', text: 'takes the note back\noff the board', color: 0 });
   board.add({ title: 'shopping', text: 'milk\neggs\ncoffee', color: 1 });
   board.toggle(true);
+  // the bar, start menu and hourglass are shaders; say so instead of leaving holes
+  if (!barGL || !fanGL || !glassGL) el('div', 'nogl', screenEl, '<b>WEBGL IS OFF</b>The bar, start menu and hourglass are shaders, so they can\'t draw in this browser. Turn on hardware acceleration to see them.');
 
   // =================================================================================
   // MAIN LOOP: full rate while something moves under the pointer, ~20fps idle, stopped offscreen
@@ -1325,7 +1408,7 @@
     requestAnimationFrame(frameLoop);
     if (!visible || document.hidden) { last = now; return; }
     let dt = Math.min((now - last) / 1000, 0.1); last = now;
-    const fast = pointer.in || dots.hov > 0.01 || dots.gooBlobs.length > 0 || dots.awake || L.shown || drawer.w.busy || drawer.h.busy || hg.mode === 'running' && hg.frac > 0.98;
+    const fast = pointer.in && pointer.y > SH - 260 || dots.hov > 0.01 || dots.gooBlobs.length > 0 || dots.awake || L.shown || drawer.w.busy || drawer.h.busy || hg.mode === 'running' && hg.frac > 0.98;
     if (!fast) { idleAcc += dt; if (idleAcc < (reduced ? 0.25 : 0.05)) return; dt = idleAcc; idleAcc = 0; }
     barAdvance(reduced ? 0 : dt); barDraw();
     menuAdvance(dt); menuDraw();

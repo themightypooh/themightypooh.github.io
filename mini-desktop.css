@@ -1,6 +1,7 @@
 /* mini desktop: a 1920x1080 replica of the wavegoo desktop, scaled to fit its frame.
    Everything inside .md-screen is in real screen pixels (same numbers as the QML). */
 @font-face { font-family: Roundsquare; src: url('fonts/WavegooRoundsquare.ttf'); }
+@font-face { font-family: VT323; src: url('fonts/VT323-Regular.ttf'); }
 
 .md-wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
 .md-head h1 { font-family: Roundsquare, monospace; letter-spacing: 1px; }
@@ -80,6 +81,8 @@
 .note > canvas { position: absolute; inset: 0; width: 300px; height: 280px; }
 .note-head { position: absolute; left: 0; top: 0; width: 294px; height: 34px; cursor: grab; }
 .note-head:active { cursor: grabbing; }
+.note-head, .lw-title, .cabinet, .board, .hourglass, .visits { touch-action: none; }
+.md-screen .dragging, .md-screen .dragging * { cursor: grabbing !important; }
 .md-screen .chip { position: absolute; left: 10px; top: 7px; height: 20px; width: max-content; padding: 0 10px 0 8px; font: bold 11px/20px var(--mono); color: #757980; cursor: pointer; white-space: nowrap; }
 .md-screen .chip.set { color: #141418; }
 .note-btns { position: absolute; right: 14px; top: 5px; display: flex; gap: 2px; opacity: .55; transition: opacity .18s; }
@@ -112,14 +115,26 @@
 .bcard-text.body { color: #42454b; white-space: pre-wrap; }
 
 .visits { width: 238px; height: 126px; z-index: 7; cursor: pointer; }
-.visits .vbox { position: absolute; left: 0; top: 0; width: 230px; height: 118px; background: #0b0c10; border: 2px solid #2a2d38; box-shadow: 8px 8px 0 #00000073; transition: border-color .3s; }
-.visits.flash .vbox { border-color: #35e6ff; background: #0d2a33; }
-.visits .vlabel { position: absolute; left: 14px; top: 10px; font: 11px Roundsquare, monospace; letter-spacing: 1.5px; color: #7d8496; }
-.visits .vnum { position: absolute; left: 12px; top: 26px; font: 44px/52px Roundsquare, monospace; color: #dfe4ec; }
-.visits .vplus { font: 18px Roundsquare, monospace; color: #35e6ff; margin-left: 10px; opacity: 0; transition: opacity 1.6s ease-in; vertical-align: middle; }
-.visits.flash .vplus { opacity: 1; transition: opacity .12s; }
-.visits .vsub { position: absolute; left: 14px; top: 80px; font: 10px Roundsquare, monospace; letter-spacing: 1px; color: #9aa1b2; }
-.visits canvas { position: absolute; left: 2px; bottom: 10px; }
+.visits .vbox { position: absolute; left: 0; top: 0; width: 230px; height: 118px; background: #0b0c10; border: 2px solid #2a2d38; box-shadow: 8px 8px 0 #00000073; transition: border-color .3s, background .3s; }
+.visits.flash .vbox { border-color: #35e6ff; background: #0d2a33; transition: none; }
+.visits .vlabel { position: absolute; left: 14px; top: 8px; font: 20px/1 VT323, monospace; letter-spacing: 2px; color: #7d8496; }
+.visits .vnum { position: absolute; left: 12px; top: 24px; font: 60px/56px VT323, monospace; color: #dfe4ec; transition: color .4s; }
+.visits.preview .vnum { color: #35e6ff; }
+.visits .vplus { font: 28px VT323, monospace; color: #35e6ff; margin-left: 10px; opacity: 0; transition: opacity 1.6s ease-in; vertical-align: middle; }
+.visits.preview .vplus { opacity: 1; transition: opacity .12s; }
+.visits .vsub { position: absolute; left: 14px; top: 78px; font: 17px/1 VT323, monospace; letter-spacing: 1px; color: #9aa1b2; }
+.nogl { position: absolute; left: 50%; top: 790px; transform: translateX(-50%); width: 560px; padding: 12px 18px 14px; background: #0b0c10; border: 2px solid #f09595; box-shadow: 8px 8px 0 #00000073; font: 24px/1.1 VT323, monospace; color: #dfe4ec; z-index: 40; }
+.nogl b { display: block; margin-bottom: 6px; font: 14px/1 Roundsquare, monospace; letter-spacing: 1.5px; color: #f09595; }
+.wbub { position: absolute; z-index: 60; width: 400px; padding: 14px 18px 16px; background: #0b0c10; border: 2px solid #ffe04a; box-shadow: 8px 8px 0 #00000073; font: 25px/1.1 VT323, monospace; color: #dfe4ec; pointer-events: none; opacity: 0; visibility: hidden; transform: scale(.92); transition: opacity .14s, transform .14s, visibility .14s; }
+.wbub::before { content: 'WHY I MADE IT'; display: block; margin-bottom: 8px; font: 14px/1 Roundsquare, monospace; letter-spacing: 1.5px; color: #ffe04a; }
+.wbub::after { content: ''; position: absolute; border: 11px solid transparent; }
+.wbub.left::after { left: -24px; top: var(--tail); border-right-color: #ffe04a; }
+.wbub.right::after { right: -24px; top: var(--tail); border-left-color: #ffe04a; }
+.wbub.down::after { bottom: -24px; left: var(--tail); border-top-color: #ffe04a; }
+.wbub.up::after { top: -24px; left: var(--tail); border-bottom-color: #ffe04a; }
+.wbub.left { transform-origin: 0 50%; } .wbub.right { transform-origin: 100% 50%; } .wbub.down { transform-origin: 50% 100%; } .wbub.up { transform-origin: 50% 0; }
+.wbub.open { opacity: 1; visibility: visible; transform: none; }
+.visits canvas { position: absolute; left: 2px; bottom: 4px; }
 
 .hourglass { width: 200px; height: 420px; z-index: 7; }
 .hourglass .glass { position: absolute; left: 0; top: 0; width: 200px; height: 310px; cursor: pointer; transform-style: preserve-3d; }
