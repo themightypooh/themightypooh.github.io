@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<rect x="4" y="4" width="24" height="26" fill="#141418" rx="1.5" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/>
+<rect x="7.5" y="8" width="17" height="19" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/>
+<rect x="10" y="2" width="12" height="6" fill="#141418" rx="1" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/>
+<rect x="4" y="4" width="24" height="26" fill="#a0714f" rx="1.5"/>
+<rect x="4" y="4" width="1.6" height="26" fill="#e8c48f"/>
+<rect x="7.5" y="8" width="17" height="19" fill="#f4f5f6"/>
+<rect x="22.9" y="8.5" width="1.6" height="18.5" fill="#c5c8cc"/>
+<rect x="7.5" y="25.4" width="17" height="1.6" fill="#c5c8cc"/>
+<rect x="10" y="12.5" width="12" height="1.6" fill="#5b5f65"/>
+<rect x="10" y="16.5" width="12" height="1.6" fill="#5b5f65"/>
+<rect x="10" y="20.5" width="8" height="1.6" fill="#5b5f65"/>
+<rect x="10" y="2" width="12" height="6" fill="#8f949a" rx="1"/>
+<rect x="10" y="2" width="12" height="1.6" fill="#c5c8cc"/>
+</svg>

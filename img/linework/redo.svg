@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<g transform="translate(32 0) scale(-1 1)"><path d="M8 13 H19 C24 13 27 16 27 20.5 C27 25 24 28 19 28 H14" fill="none" stroke="#141418" stroke-width="7.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="none"/></g>
+<g transform="translate(32 0) scale(-1 1)"><polygon points="2,13 11,5 11,21" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(32 0) scale(-1 1)"><path d="M8 13 H19 C24 13 27 16 27 20.5 C27 25 24 28 19 28 H14" fill="none" stroke="#ff8800" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(32 0) scale(-1 1)"><polygon points="2,13 11,5 11,21" fill="#ff8800"/></g>
+<g transform="translate(32 0) scale(-1 1)"><polygon points="2,13 11,5 11,8.5 5.5,13" fill="#ffb85c"/></g>
+</svg>

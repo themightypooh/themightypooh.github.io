@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<g transform="translate(16 16) rotate(-45)"><polygon points="-15,-0.7 -9.5,-0.7 -9.5,0.7 -15,0.7" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-9.5,-0.9 -6,-3 -6,3 -9.5,0.9" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,-3.2 14.5,-3.2 14.5,3.2 -6,3.2" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-15,-0.7 -9.5,-0.7 -9.5,0.7 -15,0.7" fill="#8f949a"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-9.5,-0.9 -6,-3 -6,3 -9.5,0.9" fill="#8f949a"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-9.5,-0.9 -6,-3 -6,-0.9 -9.5,-0.27" fill="#c5c8cc"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-9.5,0.32 -6,1.05 -6,3 -9.5,0.9" fill="#5b5f65"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,-3.2 14.5,-3.2 14.5,3.2 -6,3.2" fill="#42454b"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,-3.2 14.5,-3.2 14.5,-0.96 -6,-0.96" fill="#5b5f65"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,1.12 14.5,1.12 14.5,3.2 -6,3.2" fill="#141418"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="4,-3.2 7.5,-3.2 7.5,3.2 4,3.2" fill="#ff8800"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="4,-3.2 7.5,-3.2 7.5,-0.96 4,-0.96" fill="#ffb85c"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="4,1.12 7.5,1.12 7.5,3.2 4,3.2" fill="#c25e00"/></g>
+</svg>

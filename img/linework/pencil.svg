@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<g transform="translate(16 16) rotate(-45)"><polygon points="-15,0 -11.5,-1.2 -11.5,1.2 -15,0" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-11.5,-1.2 -6,-3.4 -6,3.4 -11.5,1.2" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,-3.4 7.5,-3.4 7.5,3.4 -6,3.4" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="7.5,-3.4 10.5,-3.4 10.5,3.4 7.5,3.4" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="10.5,-3.4 14.5,-3.4 14.5,3.4 10.5,3.4" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-15,0 -11.5,-1.2 -11.5,1.2 -15,0" fill="#42454b"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-11.5,-1.2 -6,-3.4 -6,3.4 -11.5,1.2" fill="#e8c48f"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-11.5,0.42 -6,1.19 -6,3.4 -11.5,1.2" fill="#a0714f"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,-3.4 7.5,-3.4 7.5,3.4 -6,3.4" fill="#ffe04a"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,-3.4 7.5,-3.4 7.5,-1.02 -6,-1.02" fill="#fff3a8"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-6,1.19 7.5,1.19 7.5,3.4 -6,3.4" fill="#c9a400"/></g>
+<g transform="translate(16 16) rotate(-45)"><line x1="-6" y1="-1.1" x2="7.5" y2="-1.1" stroke="#c9a400" stroke-width=".8"/></g>
+<g transform="translate(16 16) rotate(-45)"><line x1="-6" y1="1.1" x2="7.5" y2="1.1" stroke="#c9a400" stroke-width=".8"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="7.5,-3.4 10.5,-3.4 10.5,3.4 7.5,3.4" fill="#c5c8cc"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="7.5,-3.4 10.5,-3.4 10.5,-1.02 7.5,-1.02" fill="#f4f5f6"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="7.5,1.19 10.5,1.19 10.5,3.4 7.5,3.4" fill="#8f949a"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="10.5,-3.4 14.5,-3.4 14.5,3.4 10.5,3.4" fill="#f6b3b3"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="10.5,1.19 14.5,1.19 14.5,3.4 10.5,3.4" fill="#e5484d"/></g>
+</svg>

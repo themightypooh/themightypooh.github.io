@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<g transform="translate(16 16) rotate(-45)"><polygon points="-15,-0.3 -10,-1.2 -10,1.2 -15,0.3" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-10,-2.2 -1,-2.2 -1,2.2 -10,2.2" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-1,-4 2,-4 2,4 -1,4" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><path d="M2 -3.4 H9 C14 -3.4 15.5 -1.5 15.5 0 C15.5 1.5 14 3.4 9 3.4 H2Z" fill="#141418" stroke="#141418" stroke-width="3.2" stroke-linejoin="round"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-15,-0.3 -10,-1.2 -10,1.2 -15,0.3" fill="#c5c8cc"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-10,-2.2 -1,-2.2 -1,2.2 -10,2.2" fill="#b8f6ff"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-10,0.77 -1,0.77 -1,2.2 -10,2.2" fill="#35e6ff"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-10,-2.2 -4,-2.2 -4,2.2 -10,2.2" fill="#ff8800"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-10,-2.2 -4,-2.2 -4,-0.66 -10,-0.66" fill="#ffb85c"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-10,0.77 -4,0.77 -4,2.2 -10,2.2" fill="#c25e00"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-1,-4 2,-4 2,4 -1,4" fill="#8f949a"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-1,-4 2,-4 2,-1.2 -1,-1.2" fill="#c5c8cc"/></g>
+<g transform="translate(16 16) rotate(-45)"><polygon points="-1,1.4 2,1.4 2,4 -1,4" fill="#5b5f65"/></g>
+<g transform="translate(16 16) rotate(-45)"><path d="M2 -3.4 H9 C14 -3.4 15.5 -1.5 15.5 0 C15.5 1.5 14 3.4 9 3.4 H2Z" fill="#42454b"/></g>
+<g transform="translate(16 16) rotate(-45)"><path d="M2 -3.4 H9 C12 -3.4 13.5 -2.8 14.5 -1.6 H2Z" fill="#8f949a"/></g>
+</svg>
