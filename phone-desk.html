@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wavegoo</title>
+<link rel="stylesheet" href="mini-desktop.css?v=15">
+<style>
+  /* the desktop alone, filling whatever box phone.html gives it (always wider than tall) */
+  html, body { margin: 0; height: 100%; background: #090a0d; overflow: hidden; overscroll-behavior: none; }
+  body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  #md-frame { position: fixed; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; border: 0; background: #090a0d; }
+</style>
+</head>
+<body>
+<div class="md-frame" id="md-frame">
+  <div class="md-screen" id="md-screen" aria-label="The wavegoo desktop"></div>
+</div>
+<script>window.MD_MANUAL = true;</script>
+<script src="mini-desktop-shaders.js?v=12"></script>
+<script src="mini-desktop.js?v=18"></script>
+<script>
+  // 1080 tall in its own pixels and as wide as the box's shape, so it fills it edge to edge
+  const W = Math.max(innerWidth, innerHeight), H = Math.min(innerWidth, innerHeight);
+  window.mountMiniDesktop({ w: Math.max(1920, Math.round(1080 * W / H)), h: 1080 });
+</script>
+</body>
+</html>
