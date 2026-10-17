@@ -1453,7 +1453,7 @@ window.mountMiniDesktop = opts => {
   const tour = (() => {
     const tap = COARSE ? 'Tap' : 'Click';
     const steps = [
-      { el: () => barEl.querySelector('.bar-strip'), ev: 'bar', t: 'THE TASKBAR', d: 'It\'s a sand simulation riding a wave, the same as on my real desktop.', try: COARSE ? 'Drag your finger along the bottom bar.' : 'Move your mouse along the bottom bar.' },
+      { skip: COARSE, el: () => barEl.querySelector('.bar-strip'), ev: 'bar', t: 'THE TASKBAR', d: 'It\'s a sand simulation riding a wave, the same as on my real desktop.', try: COARSE ? 'Drag your finger along the bottom bar.' : 'Move your mouse along the bottom bar.' },
       { el: () => orb.node, ev: 'menu', t: 'START MENU', d: 'All my apps fan out around this orb.', try: tap + ' the orb.' },
       { el: () => (notes[0] && notes[0].el), ev: 'note', t: 'STICKY NOTES', d: 'Write anything on them. They stay where you leave them.', try: 'Drag a note somewhere.' },
       { el: () => cab.el, ev: 'cabinet', t: 'FILE CABINET', d: 'Notes I\'m done with get filed in here instead of deleted.', try: 'Drop a note on a drawer, or ' + tap.toLowerCase() + ' a drawer to peek inside.' },
@@ -1462,7 +1462,7 @@ window.mountMiniDesktop = opts => {
       { el: () => visits, ev: 'visits', t: 'VISIT COUNTER', d: 'Counts real visits to this site, live.', try: tap + ' it.' },
       { el: () => taskFs[0].node, ev: 'linework', t: 'LINEWORK', d: 'My own drawing app. Hold still at the end of a line and it snaps clean.', try: tap + ' its icon in the bar.' },
       { el: null, t: 'THAT\'S EVERYTHING', d: 'Mess around with it, nothing breaks.', last: true }
-    ];
+    ].filter(st => !st.skip);   // phones skip the taskbar: too thin to grab once shrunk
     // things the tour listens for that don't already emit
     barEl.querySelector('.bar-strip').addEventListener(COARSE ? 'pointerdown' : 'pointermove', () => emit('bar'));
     cab.el.addEventListener('pointerdown', () => emit('cabinet'));
@@ -1497,7 +1497,7 @@ window.mountMiniDesktop = opts => {
     function go(k) {
       clearTimeout(advT);
       if (waitFor) { bus.removeEventListener(waitFor, done); waitFor = null; }
-      if (i === 1 && k > 1) setMenu(false);   // close the start menu again before moving on
+      if (steps[i] && steps[i].ev === 'menu' && k > i) setMenu(false);   // close the start menu again before moving on
       i = k;
       if (i >= steps.length) return stop();
       const st = steps[i];
@@ -1512,7 +1512,7 @@ window.mountMiniDesktop = opts => {
     function done() {   // they did it: a beat of praise, then the next one
       if (waitFor) { bus.removeEventListener(waitFor, done); waitFor = null; }
       box.classList.add('nice'); $t('.tour-try').textContent = 'NICE!';
-      advT = setTimeout(() => go(i + 1), i === 1 ? 1800 : 900);
+      advT = setTimeout(() => go(i + 1), steps[i].ev === 'menu' ? 1800 : 900);
     }
     function stop() { clearTimeout(advT); if (waitFor) bus.removeEventListener(waitFor, done); waitFor = null; box.hidden = true; tourOn = false; i = -1; }
     nextB.onclick = () => go(i + 1); skipB.onclick = stop;
