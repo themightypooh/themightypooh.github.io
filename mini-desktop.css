@@ -199,3 +199,24 @@ button.sicon:hover::before { background: #1c2028e6; }
 .lw-vs .val, .lw-vs .nm { position: absolute; left: 0; right: 0; text-align: center; font: bold 10px Topaz, monospace; color: #f4f5f6; }
 .lw-vs .val { top: 4px; } .lw-vs .nm { bottom: 2px; }
 .lw-toast { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); background: #efeee6; border: 2px solid #141418; font: bold 12px/22px Topaz, monospace; padding: 0 10px; display: none; }
+
+/* ---- tour bubble (on the frame, real CSS pixels, so it reads at any scale) ---- */
+.tour { position: absolute; z-index: 300; width: min(300px, 44%); box-sizing: border-box; padding: 12px 14px; background: #0b0c10f2; border: 2px solid #35e6ff;
+  box-shadow: 6px 6px 0 #00000073; color: #dfe4ec; font: 15px/1.35 system-ui, sans-serif; transition: border-color .2s; }
+.tour[hidden] { display: none; }
+.tour-n { font: 11px/1 Roundsquare, monospace; letter-spacing: 1.5px; color: #35e6ff; margin-bottom: 6px; }
+.tour-t { font: 17px/1.1 Roundsquare, monospace; letter-spacing: 1px; color: #fff; margin-bottom: 6px; }
+.tour-d { color: #b9c0cc; }
+.tour-try { margin-top: 8px; color: #ffe04a; font-weight: 600; }
+.tour-try[hidden] { display: none; }
+.tour.nice { border-color: #3ddc84; } .tour.nice .tour-try { color: #3ddc84; }
+.tour-btns { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.tour-btns button { font: 13px/1 system-ui, sans-serif; color: #dfe4ec; background: #1c2028; border: 1px solid #ffffff2e; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+.tour-btns .tour-next { margin-left: auto; background: #35e6ff; color: #090a0d; border-color: #35e6ff; font-weight: 700; }
+.tour-btns button[hidden] { display: none; }
+.tour::after { content: ''; position: absolute; border: 9px solid transparent; }
+.tour.left::after { left: -20px; top: calc(var(--tail) - 9px); border-right-color: #35e6ff; }
+.tour.right::after { right: -20px; top: calc(var(--tail) - 9px); border-left-color: #35e6ff; }
+.tour.down::after { bottom: -20px; left: calc(var(--tail) - 9px); border-top-color: #35e6ff; }
+.tour.up::after { top: -20px; left: calc(var(--tail) - 9px); border-bottom-color: #35e6ff; }
+@media (max-width: 500px), (max-height: 420px) { .tour { font-size: 13px; padding: 10px 12px; } .tour-t { font-size: 15px; } }

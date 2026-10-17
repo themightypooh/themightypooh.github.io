@@ -13,6 +13,7 @@ window.mountMiniDesktop = opts => {
   const screenEl = $('#md-screen'), frame = $('#md-frame'), info = $('#md-info');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const COARSE = matchMedia('(pointer: coarse)').matches;   // touch screen
+  const bus = new EventTarget(), emit = k => bus.dispatchEvent(new Event(k));   // the tour listens for these
   // phones and weak machines: the shaders run at a lower frame rate (looks the same, saves battery and heat)
   const LITE = matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory || 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4 ||
     !!(navigator.connection && navigator.connection.saveData);
@@ -111,6 +112,7 @@ window.mountMiniDesktop = opts => {
     visits: 'Job hunting is quiet. Watching this go up means someone actually looked at my work.',
     linework: 'I can\'t draw for shit, but I need quick sketches for levels and props. Krita\'s overkill and I loved Concepts, so I made my own that cleans up my wobbly lines.'
   };
+  let tourOn = false;
   const whyEl = el('div', 'wbub', screenEl);
   let whyT = 0, whyNode = null;
   function whyHide() { clearTimeout(whyT); whyEl.classList.remove('open'); whyNode = null; }
@@ -128,7 +130,7 @@ window.mountMiniDesktop = opts => {
     whyEl.className = 'wbub open ' + side; whyNode = node;
   }
   function whyOn(node, k, atPointer) {
-    node.addEventListener('pointerenter', () => { clearTimeout(whyT); if (whyNode === node || dragging || dragNote) return; whyT = setTimeout(() => { if (!dragging && !dragNote) whyShow(node, k, atPointer && { x: pointer.x }); }, 300); });
+    node.addEventListener('pointerenter', () => { clearTimeout(whyT); if (whyNode === node || dragging || dragNote || tourOn) return; whyT = setTimeout(() => { if (!dragging && !dragNote) whyShow(node, k, atPointer && { x: pointer.x }); }, 300); });
     node.addEventListener('pointerleave', () => { clearTimeout(whyT); whyT = setTimeout(whyHide, 150); });
     node.addEventListener('pointerdown', whyHide);
   }
@@ -556,7 +558,7 @@ window.mountMiniDesktop = opts => {
     if (open === L.open) return;
     L.open = open; orb.node.classList.toggle('open', open); menuEl.classList.toggle('open', open);
     const from = L.reveal, t0 = performance.now(), dur = open ? 1350 : 450;
-    if (open) { L.shown = true; menuEl.classList.add('shown'); L.query = ''; L.spin = L.spinS = 0; L.armed = ''; select(-1, -1); rebuildRings(); explain('menu'); }
+    if (open) { emit('menu'); L.shown = true; menuEl.classList.add('shown'); L.query = ''; L.spin = L.spinS = 0; L.armed = ''; select(-1, -1); rebuildRings(); explain('menu'); }
     L.anim = { from, to: open ? 1 : 0, t0, dur: dur * Math.abs((open ? 1 : 0) - from), ease: open ? (x => -(Math.cos(Math.PI * x) - 1) / 2) : (x => x * x) };
     shock(31, barTop + 23 - 6, 30);
   }
@@ -814,9 +816,10 @@ window.mountMiniDesktop = opts => {
   function putAway(n) { if (n.cat) cab.file(n, cab.cats.indexOf(n.cat)); else removeNote(n); }
   let dragNote = null, dragAt = { x: 0, y: 0 };
   function noteDropped(n, p) {
+    emit('note');
     const i = cab.drawerAt(p.x, p.y), onBoard = board.open && board.inCork(p.x, p.y);
     const z = e => +getComputedStyle(e).zIndex || 0;
-    if (i >= 0 && !(onBoard && z(board.el) > z(cab.el))) { n.cat = cab.cats[i]; cab.file(n, i); return; }
+    if (i >= 0 && !(onBoard && z(board.el) > z(cab.el))) { n.cat = cab.cats[i]; cab.file(n, i); emit('cabinet'); return; }
     if (onBoard) pinToBoard(n, p.x - board.x - 60, p.y - board.y - 10);
   }
 
@@ -1431,6 +1434,81 @@ window.mountMiniDesktop = opts => {
   // the bar, start menu and hourglass are shaders; say so instead of leaving holes
   if (!barGL || !fanGL || !glassGL) el('div', 'nogl', screenEl, '<b>WEBGL IS OFF</b>The bar, start menu and hourglass are shaders, so they can\'t draw in this browser. Turn on hardware acceleration to see them.');
 
+
+  // =================================================================================
+  // TOUR: one bubble at a time says what a thing is and asks you to try it, then moves on
+  // when you do (or on Next). Lives on the frame, not the scaled screen, so it reads at any size.
+  // =================================================================================
+  const tour = (() => {
+    const tap = COARSE ? 'Tap' : 'Click';
+    const steps = [
+      { el: () => barEl.querySelector('.bar-strip'), ev: 'bar', t: 'THE TASKBAR', d: 'It\'s a sand simulation riding a wave, the same as on my real desktop.', try: COARSE ? 'Drag your finger along the bottom bar.' : 'Move your mouse along the bottom bar.' },
+      { el: () => orb.node, ev: 'menu', t: 'START MENU', d: 'All my apps fan out around this orb.', try: tap + ' the orb.' },
+      { el: () => (notes[0] && notes[0].el), ev: 'note', t: 'STICKY NOTES', d: 'Write anything on them. They stay where you leave them.', try: 'Drag a note somewhere.' },
+      { el: () => cab.el, ev: 'cabinet', t: 'FILE CABINET', d: 'Notes I\'m done with get filed in here instead of deleted.', try: 'Drop a note on a drawer, or ' + tap.toLowerCase() + ' a drawer to peek inside.' },
+      { el: () => board.el, ev: 'board', t: 'CORKBOARD', d: 'The stuff I can\'t afford to forget gets pinned here.', try: tap + ' a card to take it back off the board.' },
+      { el: () => glassEl, ev: 'hourglass', t: 'HOURGLASS', d: 'A sand timer. Watching sand drain sticks better than numbers.', try: tap + ' it to flip it.' },
+      { el: () => visits, ev: 'visits', t: 'VISIT COUNTER', d: 'Counts real visits to this site, live.', try: tap + ' it.' },
+      { el: () => taskFs[0].node, ev: 'linework', t: 'LINEWORK', d: 'My own drawing app. Hold still at the end of a line and it snaps clean.', try: tap + ' its icon in the bar.' },
+      { el: null, t: 'THAT\'S EVERYTHING', d: 'Mess around with it, nothing breaks.', last: true }
+    ];
+    // things the tour listens for that don't already emit
+    barEl.querySelector('.bar-strip').addEventListener(COARSE ? 'pointerdown' : 'pointermove', () => emit('bar'));
+    cab.el.addEventListener('pointerdown', () => emit('cabinet'));
+    board.el.addEventListener('pointerdown', () => emit('board'));
+    glassEl.addEventListener('click', () => emit('hourglass'));
+    visits.addEventListener('pointerdown', () => emit('visits'));
+    taskFs[0].node.addEventListener('click', () => emit('linework'));
+
+    const box = el('div', 'tour', frame); box.hidden = true;
+    box.innerHTML = '<div class="tour-n"></div><div class="tour-t"></div><div class="tour-d"></div><div class="tour-try"></div>' +
+      '<div class="tour-btns"><button class="tour-skip">Skip tour</button><button class="tour-next">Next</button></div>';
+    const $t = c => box.querySelector(c), skipB = $t('.tour-skip'), nextB = $t('.tour-next');
+    let i = -1, waitFor = null, advT = 0;
+    function place() {
+      if (box.hidden) return;
+      const st = steps[i], node = st.el && st.el();
+      const fr = frame.getBoundingClientRect(), bw = box.offsetWidth, bh = box.offsetHeight, m = 10, gap = 14;
+      let x, y, side = '';
+      if (!node) { x = (fr.width - bw) / 2; y = (fr.height - bh) / 2; }
+      else {
+        const r = node.getBoundingClientRect(), L = r.left - fr.left, T = r.top - fr.top, R = r.right - fr.left, B = r.bottom - fr.top;
+        if (R + gap + bw < fr.width - m) { side = 'left'; x = R + gap; y = T + (B - T) / 2 - bh / 2; }
+        else if (L - gap - bw > m) { side = 'right'; x = L - gap - bw; y = T + (B - T) / 2 - bh / 2; }
+        else if (T - gap - bh > m) { side = 'down'; x = L + (R - L) / 2 - bw / 2; y = T - gap - bh; }
+        else { side = 'up'; x = L + (R - L) / 2 - bw / 2; y = B + gap; }
+        x = clamp(x, m, fr.width - bw - m); y = clamp(y, m, fr.height - bh - m);
+        const tail = side === 'left' || side === 'right' ? clamp(T + (B - T) / 2 - y, 14, bh - 14) : clamp(L + (R - L) / 2 - x, 14, bw - 14);
+        box.style.setProperty('--tail', tail + 'px');
+      }
+      box.style.left = x + 'px'; box.style.top = y + 'px'; box.className = 'tour ' + side;
+    }
+    function go(k) {
+      clearTimeout(advT);
+      if (waitFor) { bus.removeEventListener(waitFor, done); waitFor = null; }
+      if (i === 1 && k > 1) setMenu(false);   // close the start menu again before moving on
+      i = k;
+      if (i >= steps.length) return stop();
+      const st = steps[i];
+      $t('.tour-n').textContent = st.last ? 'TOUR' : 'TOUR · ' + (i + 1) + ' / ' + (steps.length - 1);
+      $t('.tour-t').textContent = st.t; $t('.tour-d').textContent = st.d;
+      $t('.tour-try').textContent = st.try ? 'TRY IT: ' + st.try : ''; $t('.tour-try').hidden = !st.try;
+      nextB.textContent = st.last ? 'Done' : 'Next'; skipB.hidden = !!st.last;
+      box.hidden = false; box.classList.remove('nice'); tourOn = true; whyHide();
+      if (st.ev) { waitFor = st.ev; bus.addEventListener(st.ev, done); }
+      requestAnimationFrame(place);
+    }
+    function done() {   // they did it: a beat of praise, then the next one
+      if (waitFor) { bus.removeEventListener(waitFor, done); waitFor = null; }
+      box.classList.add('nice'); $t('.tour-try').textContent = 'NICE!';
+      advT = setTimeout(() => go(i + 1), i === 1 ? 1800 : 900);
+    }
+    function stop() { clearTimeout(advT); if (waitFor) bus.removeEventListener(waitFor, done); waitFor = null; box.hidden = true; tourOn = false; i = -1; }
+    nextB.onclick = () => go(i + 1); skipB.onclick = stop;
+    new ResizeObserver(place).observe(frame); setInterval(place, 400);   // follow widgets that move or get dragged
+    return { start: () => go(0), stop };
+  })();
+
   // =================================================================================
   // MAIN LOOP: full rate while something moves under the pointer, ~20fps idle, stopped offscreen
   // =================================================================================
@@ -1452,5 +1530,7 @@ window.mountMiniDesktop = opts => {
   document.fonts.ready.then(() => { tickClock(); buildCatText(); notes.forEach(paintNote); });
   tickClock(); buildCatText(); setInterval(tickClock, 30000);
   requestAnimationFrame(frameLoop);
+  if (opts.tour) setTimeout(tour.start, 900);
+  return { tour };
 };
-if (!window.MD_MANUAL) window.mountMiniDesktop();
+if (!window.MD_MANUAL) window.mdDesk = window.mountMiniDesktop();

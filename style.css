@@ -106,6 +106,7 @@ h1 {
   transition: transform .15s, filter .15s;
 }
 .btn:hover { color: #0b0c10; transform: translateY(-1px); filter: brightness(1.1); }
+button.btn { cursor: pointer; }
 .btn.ghost { background: rgba(18, 20, 26, .8); color: var(--text); border-color: var(--line); }
 .btn.ghost:hover { border-color: var(--dot); color: #fff; }
 
