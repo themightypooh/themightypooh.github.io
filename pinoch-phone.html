@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#090a0d">
+<title>Pinoch on your phone</title>
+<meta name="description" content="Pinoch, fullscreen and sideways on your phone.">
+<style>
+  html, body { margin: 0; height: 100%; background: #090a0d; overflow: hidden; overscroll-behavior: none; }
+  body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  @font-face { font-family: Roundsquare; src: url('fonts/WavegooRoundsquare.woff2') format('woff2'), url('fonts/WavegooRoundsquare.ttf'); }
+  #pn { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; background: #05080c; overflow: hidden; }
+  #pn iframe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; border: 0; transform-origin: 0 0; }
+
+  .gate { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+    padding: 24px; box-sizing: border-box; text-align: center; color: #dfe4ec; font-family: Roundsquare, monospace;
+    background: #090a0d url('img/wallpaper-insert-coin.webp?v=3') center / cover no-repeat; }
+  .gate::before { content: ''; position: absolute; inset: 0; background: #090a0dcc; z-index: -1; }
+  .gate[hidden] { display: none; }
+  .gate h1 { margin: 0; font-weight: 400; font-size: clamp(40px, 12vw, 72px); letter-spacing: 2px;
+    background: linear-gradient(100deg, #9fe1cb, #35e6ff 50%, #7f77dd); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .gate p { margin: 0; max-width: 30ch; font: 15px/1.5 system-ui, sans-serif; color: #9aa1ad; }
+  .gate .go { font: 20px Roundsquare, monospace; letter-spacing: 2px; color: #090a0d; background: linear-gradient(100deg, #35e6ff, #7f77dd);
+    border: 0; border-radius: 12px; padding: 16px 34px; cursor: pointer; }
+  .gate .back { font: 14px system-ui, sans-serif; color: #9aa1ad; }
+  .turn { display: none; flex-direction: column; align-items: center; gap: 14px; }
+  .turn svg { width: 64px; height: 64px; animation: tip 2.4s cubic-bezier(.5,0,.3,1) infinite; }
+  @keyframes tip { 0%, 25% { transform: rotate(0deg); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+  @media (orientation: portrait) { .gate.started .turn { display: flex; } .gate.started .go { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .turn svg { animation: none; transform: rotate(-90deg); } }
+
+  .exit { position: fixed; z-index: 90; top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right));
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid #ffffff33; background: #090a0d99; color: #dfe4ec;
+    font: 18px/32px system-ui, sans-serif; text-align: center; text-decoration: none; }
+  .exit[hidden] { display: none; }
+</style>
+</head>
+<body>
+<div id="pn"><iframe id="pn-screen" title="Pinoch: a creature that grows as my from-scratch language model trains (demo run)" scrolling="no"></iframe></div>
+<a class="exit" id="exit" href="index.html#pinoch" aria-label="Back to the portfolio" hidden>×</a>
+
+<div class="gate" id="gate">
+  <h1>PINOCH</h1>
+  <p>An AI I built from scratch that learns to talk like a kid does. Pinoch is its body, and he grows up as it learns. Tap to drop food, hold to stream, tap Pinoch to pet him.</p>
+  <button class="go" id="go">START</button>
+  <div class="turn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#9fe1cb" stroke-width="1.6" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18.5h2"/></svg>
+    <p>Turn your phone sideways.</p>
+  </div>
+  <a class="back" href="index.html#pinoch">← back to the portfolio</a>
+</div>
+
+<script>
+(() => {
+  const gate = document.getElementById('gate'), go = document.getElementById('go'), exit = document.getElementById('exit');
+  const box = document.getElementById('pn'), fr = document.getElementById('pn-screen');
+  let started = false, settle = 0;
+  const landscape = () => innerWidth > innerHeight;
+  // fit the 1280x720 viewer inside the screen, centred
+  function fit() {
+    const k = Math.min(box.clientWidth / 1280, box.clientHeight / 720);
+    fr.style.transform = `translate(${(box.clientWidth - 1280 * k) / 2}px,${(box.clientHeight - 720 * k) / 2}px) scale(${k})`;
+  }
+  function start() {
+    if (started || !landscape()) return;
+    started = true; gate.hidden = true; exit.hidden = false;
+    fr.src = 'pinoch/index.html?demo=1'; fit();
+  }
+  function later() { clearTimeout(settle); settle = setTimeout(() => { start(); fit(); }, 350); }
+  go.addEventListener('click', async () => {
+    gate.classList.add('started');
+    try { if (document.fullscreenEnabled && !document.fullscreenElement) await document.documentElement.requestFullscreen({ navigationUI: 'hide' }); } catch (e) {}
+    try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch (e) {}
+    later();
+  });
+  addEventListener('resize', () => { if (gate.classList.contains('started')) later(); });
+  document.addEventListener('visibilitychange', () => { try { fr.contentWindow.PN_PAUSED = document.hidden; } catch (e) {} });
+  exit.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); });
+})();
+</script>
+</body>
+</html>

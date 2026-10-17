@@ -206,12 +206,13 @@ function chart() {
 var pop = [{ x: 0, y: 0 }];   // talk.js reads pop[0] for the speech bubble
 let last = performance.now(), acc = 0;
 function frame(now) {
-  requestAnimationFrame(frame); if (SELFTEST) { if (pin) draw(); return; }
+  requestAnimationFrame(frame); if (window.PN_PAUSED) { last = now; return; }   // host page: off screen
+  if (SELFTEST) { if (pin) draw(); return; }
   acc += Math.min(0.1, (now - last) / 1000); last = now; eraFlash = Math.max(0, eraFlash - 1 / 60);
   if (pin) { let n = 0; while (acc >= 1 / 60 && n < 4) { sD += (sT - sD) * (1 / 60) * 0.7; roomUpdate(); acc -= 1 / 60; n++; } if (n === 4) acc = 0; draw(); }
 }
 addEventListener('beforeunload', () => { if (pin) try { localStorage.setItem('pinoch.brain.v2', JSON.stringify({ W: pin.Brain.W, Drives: pin.Drives, Motor: pin.Motor })); } catch (_) {} });
-poll(); setInterval(poll, DEMO ? 250 : CONFIG.pollMs);
+poll(); setInterval(() => { if (!window.PN_PAUSED) poll(); }, DEMO ? 250 : CONFIG.pollMs);
 requestAnimationFrame(frame);
 if (SELFTEST) {   // drives every control via the same input path and reports in document.title
   setInterval(() => { if (pin) { sD += (sT - sD) * (1 / 60) * 0.7; roomUpdate(); } }, 1000 / 60);

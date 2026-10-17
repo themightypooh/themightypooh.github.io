@@ -1,11 +1,13 @@
 @font-face {
   font-family: "VT323";
-  src: url("fonts/VT323-Regular.ttf") format("truetype");
+  src: url("fonts/VT323-Regular.woff2") format("woff2"), url("fonts/VT323-Regular.ttf") format("truetype");
+  font-display: swap;
   font-display: swap;
 }
 @font-face {
   font-family: "Roundsquare";
-  src: url("fonts/WavegooRoundsquare.ttf") format("truetype");
+  src: url("fonts/WavegooRoundsquare.woff2") format("woff2"), url("fonts/WavegooRoundsquare.ttf") format("truetype");
+  font-display: swap;
   font-display: swap;
 }
 
@@ -211,6 +213,9 @@ footer p:first-child { font-size: 20px; color: var(--text); }
 /* hero is centred under the rat */
 .hero .links { justify-content: center; }
 
+/* the browser skips laying out and painting sections until they're near the screen */
+main > section ~ section { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
   .feature-body { grid-template-columns: 1fr; }
@@ -325,6 +330,12 @@ footer p:first-child { font-size: 20px; color: var(--text); }
 .brain-info { position: absolute; left: 14px; bottom: 8px; margin: 0; font: 400 20px/1 "VT323", var(--mono); color: var(--cyan); }
 .pn-frame { position: relative; width: min(100%, calc(86vh * 16 / 9)); aspect-ratio: 16 / 9; margin-inline: auto; overflow: hidden; background: #05080c; border-block: 1px solid #ffffff1a; }
 .pn-frame iframe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; border: 0; transform-origin: 0 0; }
+.pn-start { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  border: 0; cursor: pointer; color: #dfe4ec; font: 400 clamp(20px, 4vw, 34px)/1 var(--display); letter-spacing: 2px;
+  background: radial-gradient(ellipse at 50% 55%, rgba(159,225,203,.14), transparent 65%), #05080c; }
+.pn-start small { font: 14px/1.2 var(--mono); letter-spacing: 0; color: var(--muted); }
+.pn-play { width: 0; height: 0; border-style: solid; border-width: 22px 0 22px 36px; border-color: transparent transparent transparent #9fe1cb; transition: transform .2s; }
+.pn-start:hover .pn-play, .pn-start:focus-visible .pn-play { transform: scale(1.15); }
 .brain-cap { max-width: 62ch; margin: 14px 0 0; color: var(--muted); font-size: 15px; }
 .stash .brain-layers { position: relative; margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: #0b0c10; }
 .brain-title { margin: 28px 0 0; font-size: 18px; }

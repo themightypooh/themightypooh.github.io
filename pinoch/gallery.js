@@ -247,7 +247,7 @@ function status(msg) { if (performance.now() - Gal.toastT < 3000) msg = Gal.toas
 function openGallery() { if (!Gal.cells.length) Gal.init(); Gal.open = true; gc.style.display = 'block';
   let pend = null; try { pend = JSON.parse(localStorage.getItem('pinoch.pendinggenome.v1')); } catch (_) {} if (pend && !Gal.preview) Gal.Preview(pend); }
 function closeGallery() { Gal.open = false; gc.style.display = 'none'; }
-(function loop() { requestAnimationFrame(loop); galFrame(); })();
+(function loop() { requestAnimationFrame(loop); if (!window.PN_PAUSED) galFrame(); })();
 // entry button on the room view, styled like a plips tab
 const gb = document.createElement('button'); gb.id = 'galbtn'; gb.textContent = 'Gallery';
 gb.style.cssText = 'position:absolute;left:14px;top:46px;z-index:10;background:rgb(30,35,38);color:rgb(206,214,209);border:1px solid rgb(40,46,49);font:14px "Go","DejaVu Sans",sans-serif;height:30px;padding:0 12px;cursor:pointer';

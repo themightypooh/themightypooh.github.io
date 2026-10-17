@@ -12,6 +12,9 @@ window.mountMiniDesktop = opts => {
   const $ = (s, r = document) => r.querySelector(s);
   const screenEl = $('#md-screen'), frame = $('#md-frame'), info = $('#md-info');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // phones and weak machines: the shaders run at a lower frame rate (looks the same, saves battery and heat)
+  const LITE = matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory || 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4 ||
+    !!(navigator.connection && navigator.connection.saveData);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   function el(tag, cls, parent, html) {
@@ -1425,14 +1428,15 @@ window.mountMiniDesktop = opts => {
   // =================================================================================
   // MAIN LOOP: full rate while something moves under the pointer, ~20fps idle, stopped offscreen
   // =================================================================================
-  let visible = true, last = performance.now(), idleAcc = 0;
+  let visible = true, last = performance.now(), idleAcc = 0, liteAcc = 0;
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; last = performance.now(); }).observe(frame);
   function frameLoop(now) {
     requestAnimationFrame(frameLoop);
     if (!visible || document.hidden) { last = now; return; }
     let dt = Math.min((now - last) / 1000, 0.1); last = now;
     const fast = pointer.in && pointer.y > SH - 260 || dots.hov > 0.01 || dots.gooBlobs.length > 0 || dots.awake || L.shown || drawer.w.busy || drawer.h.busy || hg.mode === 'running' && hg.frac > 0.98;
-    if (!fast) { idleAcc += dt; if (idleAcc < (reduced ? 0.25 : 0.05)) return; dt = idleAcc; idleAcc = 0; }
+    if (!fast) { idleAcc += dt; if (idleAcc < (reduced ? 0.25 : LITE ? 0.1 : 0.05)) return; dt = idleAcc; idleAcc = 0; }
+    else if (LITE) { liteAcc += dt; if (liteAcc < 1 / 30) return; dt = Math.min(liteAcc, 0.1); liteAcc = 0; }
     barAdvance(reduced ? 0 : dt); barDraw();
     menuAdvance(dt); menuDraw();
     cab.step(dt); board.step();

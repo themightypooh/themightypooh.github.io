@@ -1,7 +1,7 @@
 /* mini desktop: a 1920x1080 replica of the wavegoo desktop, scaled to fit its frame.
    Everything inside .md-screen is in real screen pixels (same numbers as the QML). */
-@font-face { font-family: Roundsquare; src: url('fonts/WavegooRoundsquare.ttf'); }
-@font-face { font-family: VT323; src: url('fonts/VT323-Regular.ttf'); }
+@font-face { font-family: Roundsquare; src: url('fonts/WavegooRoundsquare.woff2') format('woff2'), url('fonts/WavegooRoundsquare.ttf'); font-display: swap; }
+@font-face { font-family: VT323; src: url('fonts/VT323-Regular.woff2') format('woff2'), url('fonts/VT323-Regular.ttf'); font-display: swap; }
 
 .md-wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
 .md-head h1 { font-family: Roundsquare, monospace; letter-spacing: 1px; }
@@ -154,7 +154,7 @@ button.sicon:hover::before { background: #1c2028e6; }
 .md-screen .chip:focus-visible { outline: none; background: #fff; }
 
 /* ---- Linework (games/projects/linework qml): a window on the desktop ---- */
-@font-face { font-family: Topaz; src: url('fonts/Topaz.ttf'); }
+@font-face { font-family: Topaz; src: url('fonts/Topaz.woff2') format('woff2'), url('fonts/Topaz.ttf'); font-display: swap; }
 .lw-win { position: absolute; z-index: 20; display: none; flex-direction: column; box-shadow: 0 10px 40px #000a; border: 1px solid #000; }
 .lw-win.open { display: flex; }
 .lw-title { height: 30px; background: #202326; color: #fcfcfc; font: 13px/30px system-ui, sans-serif; text-align: center; position: relative; cursor: grab; flex: none; }
