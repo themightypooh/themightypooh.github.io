@@ -217,7 +217,10 @@ footer p:first-child { font-size: 20px; color: var(--text); }
 main > section ~ section { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
 
 /* phones: no animated dots behind the hero (dots.js bails out too) */
-@media (hover: none), (max-width: 700px) { #dots { display: none; } }
+@media (hover: none), (max-width: 700px) {
+  #dots { display: none; }
+  .hero { background: radial-gradient(circle, #ffffff1f 1.2px, transparent 1.6px) 0 0 / 18px 18px, var(--bg); }
+}
 
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
