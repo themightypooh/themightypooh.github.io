@@ -151,6 +151,7 @@ window.mountMiniDesktop = opts => {
     radio: 'M4 9h16v11H4z M7 9l10-5 M8 13a1.5 1.5 0 1 0 0.01 0 M13 13h4 M13 16h4',
     sonar: 'M11 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0 M7 7a7 7 0 0 0 0 10 M17 7a7 7 0 0 1 0 10 M4 4a11 11 0 0 0 0 16 M20 4a11 11 0 0 1 0 16',
     hourglass: 'M6 2h12 M6 22h12 M7 2v4l10 12v4 M17 2v4L7 18v4', cabinet: 'M5 2h14v20H5z M5 9h14 M5 16h14 M10 5h4 M10 12h4 M10 19h4',
+    visits: 'M4 20h16 M7 20v-5 M12 20v-9 M17 20v-13 M5 12l5-4 4 2 6-6',
     note: 'M4 3h16v13l-5 5H4z M7 8h10 M7 12h8', board: 'M2 3h20v17H2z M6 7h5v6H6z M14 10h5v6h-5z',
     chart: 'M4 20V10 M10 20V4 M16 20v-7 M22 20H2', shield: 'M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z',
     download: 'M12 3v12 M7 10l5 5 5-5 M4 20h16', calendar: 'M3 5h18v16H3z M3 10h18 M8 3v4 M16 3v4',
@@ -306,8 +307,8 @@ window.mountMiniDesktop = opts => {
   const dateF = floater(el('div', 'date'), 0, 20);
   const trackF = floater(el('div', 'track'), 0, 18);
   trackF.node.textContent = '♪ lofi radio';
-  const notesIcons = [['note', '#ffe04a', 'note'], ['cabinet', '#ffffff', 'cabinet'], ['board', '#ff4fd8', 'board'], ['hourglass', '#35e6ff', 'hourglass']]
-    .map(([g, c, k]) => { const f = floater(el('button', 'sicon', null, glyph(g, c, 2)), 22, 22); f.node.setAttribute('aria-label', k); f.key = k; return f; });
+  const notesIcons = [['note', '#ffe04a', 'note'], ['cabinet', '#ff9a3c', 'cabinet'], ['board', '#ff4fd8', 'board'], ['hourglass', '#35e6ff', 'hourglass'], ['visits', '#9fe1cb', 'visits']]
+    .map(([g, c, k]) => { const f = floater(el('button', 'sicon', null, glyph(g, c, 2.4)), 22, 22); f.node.setAttribute('aria-label', k); f.key = k; return f; });
   const drawerBtnF = floater(el('button', 'drawer-btn', null, '<div class="grid9">' + '<i></i>'.repeat(9) + '</div>'), 40, 36);
   drawerBtnF.node.setAttribute('aria-label', 'Pinned apps');
   const sepF = floater(el('div', 'sep'), 1, 22);
@@ -320,9 +321,9 @@ window.mountMiniDesktop = opts => {
     f.node.addEventListener('pointerenter', () => tipOn(f, t.title)); f.node.addEventListener('pointerleave', tipOff);
     return f;
   });
-  const trayFs = [['chat', '#a58cff'], ['shield', '#6fe0c4']].map(([g, c]) => floater(el('div', 'sicon', null, glyph(g, c, 2)), 18, 18));
+  const trayFs = [['chat', '#a58cff'], ['shield', '#6fe0c4']].map(([g, c]) => floater(el('div', 'sicon', null, glyph(g, c, 2.4)), 18, 18));
   const tempF = floater(el('div', 'temp'), 0, 22); tempF.node.textContent = 'cpu 46°  gpu 52°';
-  const statusFs = ['bt', 'wifi', 'vol', 'bell'].map(g => floater(el('div', 'sicon', null, glyph(g, '#fff', 2)), 22, 22));
+  const statusFs = ['bt', 'wifi', 'vol', 'bell'].map(g => floater(el('div', 'sicon', null, glyph(g, '#fff', 2.4)), 22, 22));
   const vpnF = floater(el('div', 'vpn'), 0, 24); vpnF.node.textContent = '◆ vpn on';
   el('div', 'peek-handle', barEl);
   const tip = el('div', 'tip', barEl); tip.hidden = true;
@@ -342,7 +343,7 @@ window.mountMiniDesktop = opts => {
     drawerBtnF.x = cx0 + 20; sepF.x = cx0 + 46.5;
     taskFs.forEach((f, i) => { f.x = cx0 + 53 + i * 50 + 23; });
     // notes icons: halfway between the left row and the centre row
-    const nw = 4 * 22 + 3 * 12, nx = Math.round((leftEnd + cx0) / 2 - nw / 2);
+    const nw = notesIcons.length * 22 + (notesIcons.length - 1) * 12, nx = Math.round((leftEnd + cx0) / 2 - nw / 2);
     notesIcons.forEach((f, i) => { f.x = nx + i * 34 + 11; });
     // right row: anchored 18 from the right, spacing 12
     let r = SW - 18;
@@ -1409,7 +1410,8 @@ window.mountMiniDesktop = opts => {
   notesIcons[1].node.addEventListener('click', () => cab.peek());
   notesIcons[2].node.addEventListener('click', () => board.toggle());
   notesIcons[3].node.addEventListener('click', () => { glassEl.focus(); hgToggle(); });
-  notesIcons.forEach(f => f.node.addEventListener('pointerenter', () => tipOn(f, { note: 'new note', cabinet: 'file cabinet', board: 'corkboard', hourglass: 'hourglass' }[f.key])));
+  notesIcons[4].node.addEventListener('click', () => { raise(visits); visits.focus(); visits.classList.add('flash'); setTimeout(() => visits.classList.remove('flash'), 160); });
+  notesIcons.forEach(f => f.node.addEventListener('pointerenter', () => tipOn(f, { note: 'new note', cabinet: 'file cabinet', board: 'corkboard', hourglass: 'hourglass', visits: 'portfolio visits' }[f.key])));
   notesIcons.forEach(f => f.node.addEventListener('pointerleave', tipOff));
 
   // ---- the desktop as it is on the real machine ------------------------------------------

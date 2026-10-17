@@ -32,15 +32,18 @@
 .orb:hover::before, .orb.open::before { opacity: .3; }
 .orb::after { content: ''; position: absolute; left: 10px; top: 10px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .25s cubic-bezier(.3,1.6,.5,1); }
 .orb.open::after { transform: scale(1.45); }
-.clock { color: #fff; font-size: 17px; font-weight: 500; white-space: nowrap; line-height: 22px; }
+.clock { text-shadow: 0 1px 2px #000, 0 0 4px #000; color: #fff; font-size: 17px; font-weight: 500; white-space: nowrap; line-height: 22px; }
 .date { color: #ffe04a; font-size: 15px; font-weight: 600; white-space: nowrap; line-height: 20px; }
 .date::before { content: ''; position: absolute; inset: -3px -7px; border-radius: 7px; background: #00000066; border: 1px solid rgba(255,224,74,.45); z-index: -1; }
-.track { color: #ffffffdd; font-size: 12px; font-family: system-ui, sans-serif; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; line-height: 18px; }
-.sicon { width: 22px; height: 22px; display: grid; place-items: center; }
-.sicon svg { width: 18px; height: 18px; }
+.track { text-shadow: 0 1px 2px #000, 0 0 4px #000; color: #fff; font-size: 12px; font-family: system-ui, sans-serif; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; line-height: 18px; }
+.sicon { width: 22px; height: 22px; display: grid; place-items: center; position: relative; }
+/* a dark puck behind each icon so it reads over the moving sand */
+.sicon::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: #0b0c10b8; box-shadow: 0 0 0 1px #ffffff1f; z-index: -1; transition: background .16s; }
+button.sicon:hover::before { background: #1c2028e6; }
+.sicon svg { width: 18px; height: 18px; filter: drop-shadow(0 1px 1px #000c); }
 .drawer-btn { width: 40px; height: 36px; display: grid; place-items: center; }
 .drawer-btn .grid9 { display: grid; grid-template-columns: repeat(3, 4px); gap: 4px; transition: transform .35s cubic-bezier(.3,1.5,.5,1); }
-.drawer-btn .grid9 i { width: 4px; height: 4px; border-radius: 2px; background: #fff; opacity: .75; }
+.drawer-btn .grid9 i { width: 4px; height: 4px; border-radius: 2px; background: #fff; opacity: .95; box-shadow: 0 0 2px #000; }
 .drawer-btn:hover .grid9 i, .drawer-btn.open .grid9 i { opacity: 1; }
 .drawer-btn.open .grid9 { transform: rotate(45deg); }
 .sep { width: 1px; height: 22px; background: #ffffff44; }
@@ -49,11 +52,11 @@
 .task:hover::before { opacity: .14; }
 .task.active::before { opacity: .26; }
 .task svg { width: 24px; height: 24px; position: relative; }
-.task::after { content: ''; position: absolute; bottom: -3px; left: 50%; width: 4px; height: 3px; margin-left: -2px; border-radius: 1.5px; background: #fff; opacity: .5; transition: width .2s, margin .2s; }
+.task::after { content: ''; position: absolute; bottom: -3px; left: 50%; width: 4px; height: 3px; margin-left: -2px; border-radius: 1.5px; background: #fff; opacity: .85; transition: width .2s, margin .2s; }
 .task.active::after { width: 14px; margin-left: -7px; opacity: 1; }
-.temp { color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; line-height: 22px; }
+.temp { color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; line-height: 22px; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
 .vpn { height: 24px; border-radius: 12px; padding: 0 10px; font-size: 11px; line-height: 22px; border: 1px solid #9fe1cb; background: #2affffff; color: #e1f5ee; white-space: nowrap; }
-.peek-handle { position: absolute; right: 0; top: 92px; width: 6px; height: 30px; border-radius: 3px; background: #fff; opacity: .25; pointer-events: auto; }
+.peek-handle { position: absolute; right: 0; top: 92px; width: 6px; height: 30px; border-radius: 3px; background: #fff; opacity: .5; pointer-events: auto; }
 .pin-app { position: absolute; left: 0; top: 0; width: 46px; height: 46px; border-radius: 23px; display: grid; place-items: center; pointer-events: auto; transform-origin: 50% 50%; }
 .pin-app:hover { background: #ffffff38; }
 .pin-app svg { width: 30px; height: 30px; }
