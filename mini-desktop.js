@@ -305,8 +305,6 @@ window.mountMiniDesktop = opts => {
   orb.node.setAttribute('aria-label', 'Start menu');
   const clockF = floater(el('div', 'clock'), 0, 22);
   const dateF = floater(el('div', 'date'), 0, 20);
-  const trackF = floater(el('div', 'track'), 0, 18);
-  trackF.node.textContent = '♪ lofi radio';
   const notesIcons = [['note', '#ffe04a', 'note'], ['cabinet', '#ff9a3c', 'cabinet'], ['board', '#ff4fd8', 'board'], ['hourglass', '#35e6ff', 'hourglass'], ['visits', '#9fe1cb', 'visits']]
     .map(([g, c, k]) => { const f = floater(el('button', 'sicon', null, glyph(g, c, 2.4)), 22, 22); f.node.setAttribute('aria-label', k); f.key = k; return f; });
   const drawerBtnF = floater(el('button', 'drawer-btn', null, '<div class="grid9">' + '<i></i>'.repeat(9) + '</div>'), 40, 36);
@@ -333,10 +331,10 @@ window.mountMiniDesktop = opts => {
 
   function layoutBar() {
     const w = f => (f.w = f.node.offsetWidth || f.w);
-    [clockF, dateF, trackF, tempF, vpnF].forEach(w);
+    [clockF, dateF, tempF, vpnF].forEach(w);
     // left row: x 14, spacing 14
     let x = 14;
-    for (const f of [orb, clockF, dateF, trackF]) { f.x = x + f.w / 2; x += f.w + 14; }
+    for (const f of [orb, clockF, dateF]) { f.x = x + f.w / 2; x += f.w + 14; }
     const leftEnd = x - 14;
     // centre row: drawer button, separator, tasks (spacing 6, tasks 4 apart)
     const tasksW = taskFs.length * 46 + (taskFs.length - 1) * 4, centreW = 40 + 6 + 1 + 6 + tasksW, cx0 = (SW - centreW) / 2;
