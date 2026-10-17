@@ -4,6 +4,8 @@
 (() => {
   const canvas = document.getElementById("dots");
   if (!canvas) return;
+  // phones: skip it entirely (hidden in style.css too); it costs more than it's worth on a small, weak screen
+  if (matchMedia("(hover: none), (max-width: 700px)").matches) return;
   const ctx = canvas.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const GAP = 18, SIZE = 3, K = 0.06, DAMP = 0.86, RADIUS = 110, PUSH = 2.4;

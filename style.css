@@ -216,6 +216,9 @@ footer p:first-child { font-size: 20px; color: var(--text); }
 /* the browser skips laying out and painting sections until they're near the screen */
 main > section ~ section { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
 
+/* phones: no animated dots behind the hero (dots.js bails out too) */
+@media (hover: none), (max-width: 700px) { #dots { display: none; } }
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
   .feature-body { grid-template-columns: 1fr; }
