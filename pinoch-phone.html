@@ -59,7 +59,8 @@
   const gate = document.getElementById('gate'), go = document.getElementById('go'), exit = document.getElementById('exit');
   const box = document.getElementById('pn'), fr = document.getElementById('pn-screen');
   let started = false, settle = 0;
-  const landscape = () => innerWidth > innerHeight;
+  const LAND = matchMedia('(orientation: landscape)');
+  const landscape = () => LAND.matches || innerWidth > innerHeight;
   // fit the 1280x720 viewer inside the screen, centred
   function fit() {
     const k = Math.min(box.clientWidth / 1280, box.clientHeight / 720);
@@ -77,7 +78,12 @@
     try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch (e) {}
     later();
   });
-  addEventListener('resize', () => { if (gate.classList.contains('started')) later(); });
+  // phones report a rotation in different ways (or late), so listen to all of them and poll as a backup
+  const onTurn = () => { if (gate.classList.contains('started')) later(); };
+  addEventListener('resize', onTurn); addEventListener('orientationchange', onTurn);
+  if (screen.orientation) screen.orientation.addEventListener('change', onTurn);
+  if (LAND.addEventListener) LAND.addEventListener('change', onTurn);
+  setInterval(() => { if (gate.classList.contains('started') && !gate.hidden && landscape()) start(); }, 300);
   document.addEventListener('visibilitychange', () => { try { fr.contentWindow.PN_PAUSED = document.hidden; } catch (e) {} });
   exit.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); });
 })();

@@ -62,12 +62,15 @@
 (() => {
   const gate = document.getElementById('gate'), go = document.getElementById('go'), exit = document.getElementById('exit');
   let mounted = false, settle = 0;
-  const landscape = () => innerWidth > innerHeight;
+  const LAND = matchMedia('(orientation: landscape)');
+  const landscape = () => LAND.matches || innerWidth > innerHeight;
   // the desktop is 1080 tall in its own pixels and as wide as the phone's shape, so it fills the screen
   function mount() {
     if (mounted || !landscape()) return;
     mounted = true; gate.hidden = true; exit.hidden = false;
-    window.mountMiniDesktop({ w: Math.max(1920, Math.round(1080 * innerWidth / innerHeight)), h: 1080 });
+    // long side over short side, so a not-yet-updated size mid-rotation can't hand it a portrait shape
+    const W = Math.max(innerWidth, innerHeight), H = Math.min(innerWidth, innerHeight);
+    window.mountMiniDesktop({ w: Math.max(1920, Math.round(1080 * W / H)), h: 1080 });
   }
   // wait for the browser bars and fullscreen to finish moving before measuring
   function later() { clearTimeout(settle); settle = setTimeout(mount, 350); }
@@ -77,7 +80,12 @@
     try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch (e) {}
     later();
   });
-  addEventListener('resize', () => { if (gate.classList.contains('started')) later(); });
+  // phones report a rotation in different ways (or late), so listen to all of them and poll as a backup
+  const onTurn = () => { if (gate.classList.contains('started')) later(); };
+  addEventListener('resize', onTurn); addEventListener('orientationchange', onTurn);
+  if (screen.orientation) screen.orientation.addEventListener('change', onTurn);
+  if (LAND.addEventListener) LAND.addEventListener('change', onTurn);
+  setInterval(() => { if (gate.classList.contains('started') && !gate.hidden && landscape()) mount(); }, 300);
   exit.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); });
 })();
 </script>
