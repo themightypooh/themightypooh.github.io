@@ -10,16 +10,16 @@
 <meta property="og:image" content="https://themightypooh.github.io/img/wavegoo-poster.jpg">
 <meta name="theme-color" content="#090a0d">
 <link rel="preload" href="fonts/WavegooRoundsquare.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="mini-desktop.css?v=9">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="mini-desktop.css?v=11">
 </head>
 <body>
 
 <header class="hero">
   <canvas id="dots" aria-hidden="true"></canvas>
+  <video class="hero-splash lazy-video" data-src="media/rat-splash-hero.mp4" data-hold="3.9,6.85" muted playsinline preload="none" poster="img/rat-poster.webp" aria-label="THEMIGHTYPOOH rat splash"></video>
   <div class="hero-inner wrap">
     <p class="status"><span class="pulse"></span>Open to work: full-time, contract &amp; freelance</p>
-    <h1>pooh</h1>
     <p class="lede">Game &amp; tools developer. I build <b>editors</b>, <b>games</b> and <b>desktop software</b>, mostly for <a href="https://sbox.game/pooh">s&amp;box</a> in C#.</p>
     <nav class="links">
       <a class="btn" href="#work">See the work</a>
@@ -29,17 +29,13 @@
       <!-- CONTACT: add email / LinkedIn here -->
     </nav>
   </div>
-  <video class="hero-splash" autoplay muted loop playsinline preload="metadata" poster="img/rat-poster.webp" aria-label="THEMIGHTYPOOH rat splash">
-    <source src="media/rat-splash.mp4" type="video/mp4">
-    <source src="media/rat-splash.webm" type="video/webm">
-  </video>
 </header>
 
 <main id="work">
 
   <section class="wrap" id="about">
     <h2 class="section-title">About</h2>
-    <p class="about">I'm Joshua Diggs, a game and tools developer in Norfolk, VA. I build complete things: Geppetto (a modelling and animation toolkit), games, desktop apps and custom tools. You get it finished and tested, not half-done. You tell me what you want. I make it exist.</p>
+    <p class="about">I'm Joshua Diggs (themightypooh), a game and tools developer in Norfolk, VA. I build complete things: Geppetto (a modelling and animation toolkit), games, desktop apps and custom tools. You get it finished and tested, not half-done. You tell me what you want. I make it exist.</p>
     <h3 class="hire-title">Hire me for</h3>
     <div class="lab hire">
       <article>
@@ -69,8 +65,14 @@
     </div>
     <div class="feature-body">
       <div class="gallery two">
-        <img src="img/geppetto-models.webp" alt="Six procedurally built rigged characters made with Effigy" loading="lazy" width="1080" height="720">
-        <img src="img/geppetto-subd.webp" alt="Effigy primitives with cage and subdivision previews" loading="lazy" width="1200" height="600">
+        <figure class="clip">
+          <video class="lazy-video" data-src="media/camhead-eyes.mp4" poster="img/camhead-eyes-poster.webp" muted loop playsinline preload="none" width="900" height="900" style="aspect-ratio:3/2;object-fit:cover;object-position:50% 45%" aria-label="Camhead, the camcorder-headed robot, looking around and blinking"></video>
+          <figcaption>Camhead's eye, rigged and animated in Geppetto.</figcaption>
+        </figure>
+        <figure class="clip">
+          <video class="lazy-video" data-src="media/podracer-engine.mp4" poster="img/podracer-engine-poster.jpg" muted loop playsinline preload="none" width="1280" height="720" aria-label="Podracer engine orbit: intake fan spinning, engine lights up to a full burn and shuts down"></video>
+          <figcaption>Podracer engine, made in Geppetto.</figcaption>
+        </figure>
       </div>
       <div class="copy">
         <h3>Effigy: a parametric modeller</h3>
@@ -95,39 +97,10 @@
     </div>
   </section>
 
-  <section class="feature wrap" id="midnight-am">
-    <div class="feature-head">
-      <p class="tag released">Complete · s&amp;box</p>
-      <h2>Midnight AM</h2>
-      <p class="sub">A cosy first-person game where you host a late-night radio show over an 8-hour shift in real time: take phone-in callers, spin vinyl and decorate the studio.</p>
-    </div>
-    <div class="feature-body">
-      <figure class="video">
-        <video src="media/mam-trailer.mp4" poster="img/mam-trailer-poster.jpg" autoplay muted loop playsinline preload="metadata" width="1280" height="720" aria-label="Midnight AM trailer: the booth, the blinds, the ON AIR sign"></video>
-      </figure>
-      <div class="copy">
-        <ul>
-          <li><b>An in-game retro computer</b> with around 20 apps: a casino, chess, minesweeper, a terminal, a mixer and a vinyl press.</li>
-          <li><b>A built-in synth engine</b>, song sequencer, voice recorder and WAV writer.</li>
-          <li><b>A fully interactive turntable:</b> tonearm, pitch slider, lid and sleeves.</li>
-          <li>First-person arms with two-bone IK and pose blending, plus a save system with round-trip tests.</li>
-        </ul>
-        <div class="thumbs wide-set">
-          <a href="img/mam-onair.webp" target="_blank"><img src="img/mam-onair.webp" alt="In-game: the ON AIR sign over the booth wall" loading="lazy"></a>
-          <a href="img/mam-solitaire.webp" target="_blank"><img src="img/mam-solitaire.webp" alt="In-game: solitaire on the retro computer" loading="lazy"></a>
-          <a href="img/mam-casino.webp" target="_blank"><img src="img/mam-casino.webp" alt="In-game: blackjack in the computer's casino app" loading="lazy"></a>
-          <a href="img/mam-slots.webp" target="_blank"><img src="img/mam-slots.webp" alt="In-game: the slots app" loading="lazy"></a>
-          <a href="img/mam-pedals.webp" target="_blank"><img src="img/mam-pedals.webp" alt="Effects pedal props" loading="lazy"></a>
-          <a href="img/mam-mic.webp" target="_blank"><img src="img/mam-mic.webp" alt="Studio microphone render" loading="lazy"></a>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="feature desk-section" id="desktop">
     <div class="feature-head wrap">
       <p class="tag released">Open source · daily driver · try it</p>
-      <h2>wavegoo + goonotes</h2>
+      <h2>wavegoo</h2>
       <p class="sub">My own desktop shell for KDE Plasma on Wayland, written from scratch in Quickshell (QML + GLSL). This is it, running in your browser: the same shaders, the same layout, shrunk to fit.</p>
     </div>
     <div class="desk-bleed">
@@ -136,142 +109,92 @@
       </div>
     </div>
     <div class="wrap desk-foot">
-      <p class="md-info" id="md-info"></p>
-      <p class="md-hint">Hover the bar, click the orb for the start menu, drag the cabinet, hourglass and counter anywhere, drag a note onto a drawer, click the hourglass. Best on a big screen.</p>
-      <p class="actions"><a class="btn" href="https://github.com/themightypooh/wavegoo">View on GitHub</a></p>
+      <p class="md-hint md-hint-touch">Tap the orb for the start menu and drag things around, or open it fullscreen below and turn your phone sideways.</p>
+      <p class="md-hint md-hint-mouse">Hover the bar, click the orb for the start menu, drag the cabinet, hourglass and counter anywhere, drag a note onto a drawer, click the hourglass. Best on a big screen.</p>
+      <p class="actions"><a class="btn" href="phone.html">Open it on your phone</a> <a class="btn ghost" href="https://github.com/themightypooh/wavegoo">View on GitHub</a></p>
     </div>
   </section>
+
 
   <section class="wrap">
     <h2 class="section-title">Games in progress</h2>
     <div class="cards">
 
-      <article class="card">
-        <video class="cover" src="media/survey-pull.mp4" poster="img/survey-pull-poster.jpg" autoplay muted loop playsinline preload="metadata" width="1280" height="592" aria-label="In-game: jumping up to catch the sonar scope and pulling it down"></video>
-        <p class="tag">s&amp;box · WIP</p>
-        <h3>Survey Sentence</h3>
-        <p>A prisoner, sealed alone in a windowless pod, finds and "prints" subjects using a sonar scope and a 3D printer. It's a PS1-style remake of my game jam entry <a href="https://sbox.game/pooh/deep_survey">Deep Survey</a>, which you can play now.</p>
+      <article class="card" id="midnight-am">
+        <video class="cover lazy-video" data-src="media/mam-trailer.mp4" poster="img/mam-trailer-poster.jpg" muted loop playsinline preload="none" width="1280" height="720" aria-label="Midnight AM trailer: the booth, the blinds, the ON AIR sign"></video>
+        <p class="tag released">s&amp;box · Published*</p>
+        <h3>Midnight AM</h3>
+        <p class="footnote">*Published, so technically complete. But I shall return.</p>
+        <p>A cosy first-person game where you host a late-night radio show over an 8-hour shift in real time: take phone-in callers, spin vinyl and decorate the studio.</p>
         <ul>
-          <li>The sonar scope turns an outside camera into echolocation through a depth post-process, displayed on a curved CRT.</li>
-          <li>Orders type onto the glass like a teleprinter, in baked bitmap fonts.</li>
-          <li>A true first-person body, with animation takes checked for how fast they swing the camera.</li>
-          <li>A layered sound director with ducking and loudness (LUFS) targets.</li>
+          <li><b>An in-game retro computer</b> with around 20 apps: a casino, chess, minesweeper, a terminal, a mixer and a vinyl press.</li>
+          <li><b>A built-in synth engine</b>, song sequencer, voice recorder and WAV writer.</li>
+          <li><b>Instruments to collect and play,</b> with effects pedals that change how each one sounds.</li>
+          <li><b>A shop for decorating the studio</b> however you like: wallpaper, flooring, speakers and more.</li>
         </ul>
-        <div class="thumbs wide">
-          <img src="img/survey-pod.webp" alt="In-game: looking down the pod from the scope station" loading="lazy" width="1200" height="554">
-          <img src="img/survey-catch.webp" alt="In-game: gloved hands catching the scope" loading="lazy" width="1200" height="554">
-          <img src="img/survey-scope.webp" alt="In-game: the scope screen warming up with static" loading="lazy" width="1200" height="554">
+        <div class="thumbs">
+          <a href="img/mam-onair.webp"><img src="img/mam-onair.webp" alt="In-game: the ON AIR sign over the booth wall" loading="lazy"></a>
+          <a href="img/mam-casino.webp"><img src="img/mam-casino.webp" alt="In-game: blackjack in the computer's casino app" loading="lazy"></a>
+          <a href="img/mam-pedals.webp"><img src="img/mam-pedals.webp" alt="In-game: ten effects pedals, from overdrive and reverb to fuzz and delay" loading="lazy"></a>
         </div>
       </article>
 
       <article class="card">
-        <img class="cover" src="img/arcade-tokens.webp" alt="Token changer machine from Inside The Arcade" loading="lazy" width="1200" height="900">
+        <video class="cover lazy-video" data-src="media/survey-pull.mp4" poster="img/survey-pull-poster.jpg" muted loop playsinline preload="none" width="1280" height="592" aria-label="In-game: jumping up to catch the sonar scope and pulling it down"></video>
+        <p class="tag">s&amp;box · WIP</p>
+        <h3>Survey Sentence</h3>
+        <p>A prisoner, sealed alone in a windowless pod, finds and prints subjects using a sonar scope and a 3D printer. It's a PS1-style remake of my earlier game <a href="https://sbox.game/pooh/deep_survey">Deep Survey</a>, which you can play now.</p>
+        <ul>
+          <li>The sonar scope turns an outside camera into echolocation through a depth post-process, displayed on a curved CRT.</li>
+          <li>A true first-person body, with animation takes checked for how fast they swing the camera.</li>
+          <li>A layered sound director with ducking and loudness (LUFS) targets.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <img class="cover" src="img/arcade-front.webp" alt="The Linden Arcade at night in s&amp;box: a brick theatre front with a neon script sign, a marquee reading TOKENS 4 FOR $1 and PRIZE COUNTER INSIDE, and a crashed flying saucer on the roof" loading="lazy" width="1440" height="900">
         <p class="tag">s&amp;box · WIP</p>
         <h3>Inside The Arcade</h3>
         <p>A first-person retro arcade where every cabinet runs its own playable game, and many let you go <i>inside</i> them.</p>
         <ul>
-          <li>Around 20 cabinets: pinball (four tables), skee-ball, a physics claw machine, air hockey, a fighter, a rally game, a shmup, light-gun games and more.</li>
-          <li>Custom pinball physics with dot-matrix and video displays.</li>
-          <li>Games are tested headlessly with simulations and soak tests.</li>
-          <li>Per-station visibility gating and hashed screen redraws keep the busy floor at 60 fps.</li>
+          <li><b>Climb into the games.</b> Win the MIND-LINK headset at the prize counter and GO INSIDE puts you in the machine: the sub in Torpedo Alley, the bass boat in Lunker Lake, the kitchen in Cover Fire.</li>
+          <li><b>See through the cabinets.</b> Win the X-ray specs and look straight through any machine's shell at the boards, motors, CRT and wiring inside, with markers that explain each part.</li>
+          <li><b>28 real games, not props.</b> A kitchen brawler, a rally stage, a shmup, a zombie light-gun holdout, skee-ball and a physics claw machine.</li>
+          <li><b>Four pinball tables</b> on custom physics, each in its own era of cabinet, with dot-matrix and video displays.</li>
+          <li><b>A few hours after school.</b> Feed tokens, win tickets, trade them at the prize counter, and be at the doors when Mom comes to pick you up.</li>
+          <li><b>Every kid on the floor is generated:</b> one low-poly body, one 256 px atlas, thousands of clip-checked looks.</li>
+          <li>Each game is tested headlessly with simulations and soak runs, and the packed floor holds 60 fps.</li>
         </ul>
+        <div class="thumbs">
+          <a href="img/arcade-prize-counter.webp"><img src="img/arcade-prize-counter.webp" alt="The prize counter: the attendant behind a glass case of penny candy, paddle balls and toys, with top prizes in a padded display under a neon PRIZES sign" loading="lazy"></a>
+          <a href="img/arcade-balcony.webp"><img src="img/arcade-balcony.webp" alt="The view from the balcony: a crawl tube sweeping down to the floor, a Gyro 360 ride and cabinets under pennant flags" loading="lazy"></a>
+          <a href="img/arcade-01_cast_lineup.webp"><img src="img/arcade-01_cast_lineup.webp" alt="The whole cast lined up: the player, the kids, the moms, the cooks, the prize-counter attendant and the shambler" loading="lazy"></a>
+        </div>
       </article>
 
-    </div>
-  </section>
-
-  <section class="feature wrap" id="characters">
-    <div class="feature-head">
-      <p class="tag">Inside The Arcade · character pipeline</p>
-      <h2>A whole arcade crowd</h2>
-      <p class="sub">A low-poly cast and a configurable character creator, sharing one 256 × 256 texture atlas.</p>
-    </div>
-    <div class="feature-body">
-      <div class="gallery">
-        <a href="img/arcade-01_cast_lineup.webp"><img src="img/arcade-01_cast_lineup.webp" alt="Arcade character lineup: player and kids in front, with moms, cooks, the manager and shambler behind" loading="lazy"></a>
-        <a href="img/arcade-02_generated_crowd.webp"><img src="img/arcade-02_generated_crowd.webp" alt="Fifteen randomly generated arcade characters" loading="lazy"></a>
-      </div>
-      <div class="copy">
-        <h3>One construction, many characters</h3>
-        <ul>
-          <li>Hand-authored cast proportions alongside seeded character generation.</li>
-          <li>Four head shapes and four modelled eye shapes, with eyes on their own bones for blinking.</li>
-          <li>Nine hairstyles, eleven hats and ten painted hat patterns. Hat and hair combinations are clip-checked across the head shapes.</li>
-          <li>Eleven tops and seven bottoms, with modelled hoods and collars.</li>
-          <li>Painted face details, wear and stains, plus socks, sweatbands and backpacks.</li>
-        </ul>
-        <p class="muted">Renders from the game models. Arms are lowered from the rig's A-pose for presentation; these aren't in-game animation poses.</p>
-      </div>
-    </div>
-    <details class="breakdown">
-      <summary>Explore the character breakdown</summary>
-      <div class="breakdown-grid">
-        <figure><a href="img/arcade-03_creator_random_grid.webp"><img src="img/arcade-03_creator_random_grid.webp" alt="Eighteen labelled, seeded character creator looks" loading="lazy"></a><figcaption>Seeded creator looks</figcaption></figure>
-        <figure><a href="img/arcade-04_heads_x_eyes.webp"><img src="img/arcade-04_heads_x_eyes.webp" alt="Four head shapes crossed with four eye shapes" loading="lazy"></a><figcaption>Heads × eyes</figcaption></figure>
-        <figure><a href="img/arcade-05_hair_and_hats.webp"><img src="img/arcade-05_hair_and_hats.webp" alt="Nine hairstyles and eleven hats" loading="lazy"></a><figcaption>Hair &amp; hats</figcaption></figure>
-        <figure><a href="img/arcade-06_clothing.webp"><img src="img/arcade-06_clothing.webp" alt="Eleven tops and seven bottoms" loading="lazy"></a><figcaption>Clothing</figcaption></figure>
-        <figure><a href="img/arcade-07_hat_patterns.webp"><img src="img/arcade-07_hat_patterns.webp" alt="Ten painted hat patterns" loading="lazy"></a><figcaption>Hat patterns</figcaption></figure>
-        <figure><a href="img/arcade-08_wear_and_extras.webp"><img src="img/arcade-08_wear_and_extras.webp" alt="Character wear, stains and accessories" loading="lazy"></a><figcaption>Wear &amp; extras</figcaption></figure>
-        <figure><a href="img/arcade-09_faces.webp"><img src="img/arcade-09_faces.webp" alt="Painted mouths, glasses, freckles and brows" loading="lazy"></a><figcaption>Face details</figcaption></figure>
-        <figure><a href="img/arcade-10_turnaround_wire.webp"><img src="img/arcade-10_turnaround_wire.webp" alt="Character turnaround and wireframe with triangle count" loading="lazy"></a><figcaption>Turnaround &amp; wireframe</figcaption></figure>
-        <figure><a href="img/arcade-11_atlas.webp"><img src="img/arcade-11_atlas.webp" alt="The shared 256 by 256 pixel character texture atlas" loading="lazy"></a><figcaption>The 256px atlas</figcaption></figure>
-      </div>
-    </details>
-  </section>
-
-  <section class="feature wrap" id="splash">
-    <div class="feature-head">
-      <p class="tag">Identity · motion experiment</p>
-      <h2>THEMIGHTYPOOH</h2>
-      <p class="sub">An ASCII rat, burnt lettering and a CRT-to-film-burn splash for future game projects.</p>
-    </div>
-    <div class="feature-body">
-      <figure class="video">
-        <video class="blend" controls playsinline preload="none" poster="img/rat-poster.webp" width="1080" height="1032" aria-label="THEMIGHTYPOOH animated rat splash with sound" aria-describedby="splash-warning">
-          <source src="media/rat-splash.mp4" type="video/mp4">
-          <source src="media/rat-splash.webm" type="video/webm">
-          <a href="media/rat-splash.mp4">Download the splash video</a>
-        </video>
-        <figcaption id="splash-warning">Contains flashing imagery and sound. Play when ready.</figcaption>
-      </figure>
-      <div class="copy">
-        <h3>From still to splash</h3>
-        <p>The static identity pairs an ASCII rat portrait with distressed, ember-toned lettering. The animated version adds a CRT decode, glitches and a full-frame burn treatment.</p>
-        <p>Generated with Python, NumPy and Pillow, with procedural grain, flicker and a layered sound bed. Exported as MP4 and WebM.</p>
-        <a class="splash-still" href="img/rat-still.webp"><img src="img/rat-still.webp" alt="Static ASCII rat portrait with burnt THEMIGHTYPOOH lettering" loading="lazy" width="804" height="804"></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap" id="assets">
-    <h2 class="section-title">Assorted assets</h2>
-    <p class="sub">Props and set pieces from Cookin, a physics cook-sim I used as a test bed for modelling and simulation. It's where I got seating down: tufted vinyl, piping and stitching, seam by seam.</p>
-    <div class="assets">
-      <figure><a href="img/assets-booths.webp"><img src="img/assets-booths.webp" alt="Booth variants and close-ups of the tufted vinyl" loading="lazy" width="1333" height="1400"></a><figcaption>Booths &amp; upholstery</figcaption></figure>
-      <figure><a href="img/assets-dining.webp"><img src="img/assets-dining.webp" alt="The diner floor: bar, stools and booths" loading="lazy" width="1400" height="788"></a><figcaption>The dining room</figcaption></figure>
-      <figure><a href="img/assets-bar.webp"><img src="img/assets-bar.webp" alt="Bar counter with stools, taps and a register" loading="lazy" width="1400" height="788"></a><figcaption>Bar &amp; stools</figcaption></figure>
-      <figure><a href="img/cookin-fryer.webp"><img src="img/cookin-fryer.webp" alt="Commercial fryer model" loading="lazy"></a><figcaption>Commercial fryer</figcaption></figure>
-      <figure><a href="img/assets-dishwasher.webp"><img src="img/assets-dishwasher.webp" alt="Stainless pass-through dishwasher, open" loading="lazy" width="1300" height="1000"></a><figcaption>Pass-through dishwasher</figcaption></figure>
-      <figure><a href="img/assets-bus.webp"><img src="img/assets-bus.webp" alt="City bus with modelled interior" loading="lazy" width="960" height="540"></a><figcaption>City bus</figcaption></figure>
-    </div>
-    <p class="muted assets-note">The code side: an eggshell that fractures through a bond graph, an egg white that necks and pinches off as rope-and-volume slime, and a pressurised yolk membrane that bursts when strained.</p>
-  </section>
-
-  <section class="wrap">
-    <h2 class="section-title">Lab</h2>
-    <div class="lab">
-      <article>
-        <h3>Grip solver</h3>
-        <p>Hand-grip authoring for Marionette. A custom asset stores blendable finger poses, and the solver closes the fingers onto the held object by testing against the hand's skin, not bone capsules. The core has no engine dependency and is unit-tested.</p>
+      <article class="card card-assets" id="assets">
+        <p class="tag">Models · props &amp; sets</p>
+        <h3>Assorted assets</h3>
+        <p>A diner kitchen, cars and curios, all modelled by me.</p>
+        <div class="reel">
+          <div class="reel-track" tabindex="0" aria-label="Asset gallery, drifting slowly. Hover or focus to hold it">
+            <figure class="reel-tile"><a href="img/asset-sq-fryer.webp"><img src="img/asset-sq-fryer.webp" alt="Gas deep fryer with baskets up and the cabinet door open on the gas valve" loading="lazy" width="900" height="900"></a><figcaption>Fryer</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-sodafountain.webp"><img src="img/asset-sq-sodafountain.webp" alt="Ice Cold Drinks soda fountain with a row of nozzles over the drip tray" loading="lazy" width="900" height="900"></a><figcaption>Soda fountain</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-dishwasher.webp"><img src="img/asset-sq-dishwasher.webp" alt="Stainless pass-through commercial dishwasher with drain boards" loading="lazy" width="900" height="900"></a><figcaption>Dishwasher</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-liquorrack.webp"><img src="img/asset-sq-liquorrack.webp" alt="Tiered diner liquor rack stacked with bottles on a wood cabinet" loading="lazy" width="900" height="900"></a><figcaption>Liquor rack</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-range.webp"><img src="img/asset-sq-range.webp" alt="Four-burner gas range with oven and back shelf" loading="lazy" width="900" height="900"></a><figcaption>Range</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-flattop.webp"><img src="img/asset-sq-flattop.webp" alt="Flat-top griddle on an open stainless stand" loading="lazy" width="900" height="900"></a><figcaption>Flat-top</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-sink3.webp"><img src="img/asset-sq-sink3.webp" alt="Three-compartment stainless dish sink with drain board" loading="lazy" width="900" height="900"></a><figcaption>3-bay sink</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-barstool.webp"><img src="img/asset-sq-barstool.webp" alt="Ladder-back bar stool with a red vinyl seat" loading="lazy" width="900" height="900"></a><figcaption>Bar stool</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-van.webp"><img src="img/asset-sq-van.webp" alt="Boxy white delivery van" loading="lazy" width="900" height="900"></a><figcaption>Delivery van</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-minivan.webp"><img src="img/asset-sq-minivan.webp" alt="Blue boxy wagon with roof rack" loading="lazy" width="900" height="900"></a><figcaption>Wagon</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-pedals.webp"><img src="img/asset-sq-pedals.webp" alt="Board of colourful guitar effect pedals" loading="lazy" width="900" height="900"></a><figcaption>Pedals</figcaption></figure>
+            <figure class="reel-tile"><a href="img/asset-sq-guitar.webp"><img src="img/asset-sq-guitar.webp" alt="Black pointed electric guitar" loading="lazy" width="900" height="900"></a><figcaption>Guitar</figcaption></figure>
+          </div>
+          <button type="button" class="reel-toggle" aria-pressed="false" aria-label="Pause the gallery"><i aria-hidden="true"></i><span>pause</span></button>
+        </div>
       </article>
-      <article>
-        <h3>VT-07</h3>
-        <p>A VR mech-cockpit pod at 1:1 scale. You climb in, the seat swings out to meet you, and you run the start-up ritual: initialize, five overhead toggles, ignition. It's now a cabinet in the arcade.</p>
-      </article>
-      <article>
-        <h3>goonotes sync</h3>
-        <p>A standard-library-only Python sync server. Per note, the newest edit wins. If both sides changed a note, the losing edit is kept as a conflict copy, and deletions travel as tombstones. An Android client is in progress.</p>
-      </article>
+
     </div>
   </section>
 
@@ -284,15 +207,42 @@
     </ul>
   </section>
 
+  <section class="wrap" id="stash">
+    <details class="breakdown more-me stash">
+      <summary>Secret stash: psst, wanna see a brain learn?</summary>
+      <div class="feature desk-section" id="pinoch">
+        <div class="feature-head wrap">
+          <p class="tag released">AI from scratch · play with it</p>
+          <h2>Pinoch</h2>
+          <p class="sub">An AI I built completely from scratch that learns to talk the way a kid does, starting from nothing. Pinoch is its body, and he grows up as it learns. This is what he looks like before he's been given anything: no lessons and not even his first words.</p>
+        </div>
+        <div class="desk-bleed">
+          <div class="pn-frame" id="pn-frame">
+            <iframe id="pn-screen" src="pinoch/index.html?demo=1" title="Pinoch: a creature that grows as my from-scratch language model trains (demo run)" loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>
+        <div class="wrap desk-foot">
+          <p class="md-hint">This is the real viewer on a two-minute demo run; on my desktop it follows the live training and I can talk to him. Tap to drop, hold to stream, pick a colour up top, and click Pinoch to pet him or right-click to poke.</p>
+          <h3 class="brain-title">NPC brain</h3>
+          <div class="npc-brain">
+            <canvas aria-label="Animated brain diagram: senses light their lobe, a fast classifier in the cerebellum picks a reflex or hands off to the language model and memory, which answers through speech"></canvas>
+            <p class="brain-info" aria-live="off"></p>
+          </div>
+          <p class="brain-cap">How a model like this drives a game NPC. Vision and hearing feed Kev, a small fast classifier: obvious stuff (a grenade beep, "jump") becomes an action straight away, like a reflex. Anything that needs thought goes to the language model with mission and memory, and comes back out as speech.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
   <section class="wrap" id="more">
     <details class="breakdown more-me">
       <summary>Made it here? You must be interested in finding out more about me!</summary>
       <div class="more-body">
         <p>I'm 30 and I live in Norfolk, Virginia.</p>
-        <p><b>How I actually work:</b> I don't write code by hand. I come up with the idea, direct an AI that writes the code, and watch it work in real time so I can catch mistakes before they land. Then I test everything myself, in game, until it's right. Geppetto, Midnight AM and my whole desktop were built this way.</p>
+        <p><b>How I actually work:</b> I design the systems, direct AI-assisted development and review the code live as it's written, so I catch mistakes before they land. Then I test everything myself, in game, until it's right. Geppetto, Midnight AM and my whole desktop were built this way.</p>
         <p><b>What I bring:</b> the vision, the taste, and the patience to go back and forth on details for as long as it takes. I'll build your idea just as happily as my own.</p>
-        <p><b>Why this, why now:</b> When I was 16 and 17 I got into trouble and did six months in prison, and I won't be doing that shit again. Those charges still come up on background checks, though, so for years cooking was the work I could get. After recently losing my last kitchen job, I've decided to kick my projects and portfolio into overdrive and get myself out there and hired or commissioned to do what I love doing: making things that people will use, remember, or just enjoy having. Them being satisfied with it is what satisfies me.</p>
-        <p><b>Right now:</b> I'm looking for work: freelance, contract or full-time. I've got plenty of free time and I pick things up fast.</p>
+        <p><b>Why this, why now:</b> I've decided to kick my projects and portfolio into overdrive and get myself out there and hired or commissioned to do what I love doing: making things that people will use, remember, or just enjoy having. Them being satisfied with it is what satisfies me.</p>
+        <p><b>Right now:</b> I'm looking for work: freelance, contract or full-time. I need the money and rent doesn't wait, so this isn't a weekend hobby, it's my full-time work now. I've got plenty of free time, I pick things up fast, and you'll have my full attention until you're happy with it.</p>
       </div>
     </details>
   </section>
@@ -304,9 +254,47 @@
   <p class="fine">© 2026 pooh</p>
 </footer>
 
+<script>
+  // lazy autoplay videos: load + play only while on screen; never autoplay with reduced motion
+  (function () {
+    var vids = document.querySelectorAll("video.lazy-video[data-src]");
+    // data-hold="from,to": play the intro once, then keep looping from..to (the rat appears, then stays)
+    document.querySelectorAll("video[data-hold]").forEach(function (v) {
+      var h = v.dataset.hold.split(",").map(Number);
+      function back() { v.currentTime = h[0]; v.play().catch(function () {}); }
+      v.addEventListener("ended", back);
+      v.addEventListener("timeupdate", function () { if (v.currentTime >= h[1] - 0.25) back(); });   // ~4 Hz, so jump early
+      if (v.requestVideoFrameCallback) {   // frame-exact where supported
+        var tick = function (now, m) { if (m.mediaTime >= h[1]) back(); v.requestVideoFrameCallback(tick); };
+        v.requestVideoFrameCallback(tick);
+      }
+    });
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function load(v) { if (!v.src) { v.src = v.dataset.src; v.preload = "auto"; } }
+    if (still) {   // keep posters; let people opt in by tapping
+      vids.forEach(function (v) { v.addEventListener("click", function () { load(v); v.paused ? v.play() : v.pause(); }); });
+      return;
+    }
+    if (!("IntersectionObserver" in window)) { vids.forEach(function (v) { load(v); v.play().catch(function () {}); }); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var v = e.target;
+        if (e.isIntersecting) { load(v); var p = v.play(); if (p) p.catch(function () {}); }
+        else if (v.src) v.pause();
+      });
+    }, { rootMargin: "200px 0px", threshold: 0.01 });
+    vids.forEach(function (v) { io.observe(v); });
+  })();
+</script>
 <script src="dots.js" defer></script>
-<script src="mini-desktop-shaders.js?v=9" defer></script>
-<script src="mini-desktop.js?v=9" defer></script>
+<script src="assets-reel.js" defer></script>
+<script src="npc-brain.js" defer></script>
+<script src="mini-desktop-shaders.js?v=12" defer></script>
+<script src="mini-desktop.js?v=15" defer></script>
+<script>
+(() => { const f = document.getElementById("pn-frame"), i = document.getElementById("pn-screen"); if (!f || !i) return;
+  const fit = () => { i.style.transform = "scale(" + f.clientWidth / 1280 + ")"; }; new ResizeObserver(fit).observe(f); fit(); })();
+</script>
 <script>
   // visit counter (abacus.jasoncameron.dev, no account): counts each browser at most once a day,
   // so refreshing doesn't inflate it. Read back by the desktop widget in ~/.config/quickshell/visits.

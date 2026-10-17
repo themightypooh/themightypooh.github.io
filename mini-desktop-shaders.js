@@ -392,22 +392,22 @@ void main() {
     float gy = clamp((p.y - glassTop() + 14.0) / (glassBot() - glassTop() + 28.0), 0.0, 1.0);
     vec3 liquid = mix(gradA.rgb, gradB.rgb, gy);
     vec4 col = vec4(0.0);
-    {
-        vec2 c = (floor(p / pitch) + 0.5) * pitch;
-        vec2 o = abs(p - c);
-        float dotM = (1.0 - smoothstep(0.55, 1.05, max(o.x, o.y)));
-        float fr = frameSdf(c);
-        float g = abs(glassSdf(c));
-        float fa = fr < 0.0 ? 0.9 : 0.0;
-        vec3 fc = mix(liquid, vec3(1.0), fr > -pitch * 1.2 && fr < 0.0 ? 0.25 : 0.0);
-        float ga = g < pitch * 0.5 ? rim.a * (1.0 + 0.6 * hover) + flash * 0.6 : 0.0;
-        vec3 gc = mix(rim.rgb, liquid, 0.35);
+    {   // frame and glass as solid antialiased strokes (the dotted outline read as fuzz once shrunk)
+        float fr = frameSdf(p);
+        float fa = 0.9 * (1.0 - smoothstep(-0.5, 0.5, fr));
+        vec3 fc = mix(liquid, vec3(1.0), smoothstep(-3.0, -1.5, fr) * 0.3);
+        float g = abs(glassSdf(p));
+        float rimA = rim.a * 0.7 * (1.0 + 0.4 * hover) + flash * 0.6;
+        float ga = clamp(rimA, 0.0, 1.0) * (1.0 - smoothstep(0.7, 1.5, g));
+        vec3 gc = mix(rim.rgb / max(rim.a, 0.001), liquid, 0.3);
         float dx = p.x - cx;
-        float hw = halfWidth(c.y);
+        float hw = halfWidth(p.y);
         float side = -dx / max(hw, 1.0);
-        float glint = (side > 0.6 && side < 0.68 && abs(c.y - neckY) > neckLen + bulbH * 0.25 && abs(c.y - neckY) < neckLen + bulbH * 0.8) ? 0.10 : 0.0;
-        float a = max(fa, max(ga, glint)) * dotM;
-        vec3 cc = fa > 0.0 ? fc : (ga > 0.0 ? gc : vec3(1.0));
+        float band = abs(p.y - neckY);
+        float glint = smoothstep(0.58, 0.62, side) * (1.0 - smoothstep(0.66, 0.70, side))
+                    * step(neckLen + bulbH * 0.25, band) * step(band, neckLen + bulbH * 0.8) * 0.18;
+        float a = max(fa, max(ga, glint));
+        vec3 cc = fa >= ga && fa >= glint ? fc : (ga >= glint ? gc : vec3(1.0));
         col = vec4(cc * a, a);
     }
     {
@@ -421,10 +421,10 @@ void main() {
             vec2 home = (id - 500.0 + 0.5 + (hash2(id) - 0.5) * 0.9) * cell + vec2(0.0, shift);
             if ((home.y < neckY) != top) continue;
             float d = sandDepth(home);
-            float prob = d > 0.0 ? 0.93 : (d > -4.0 ? exp(d / 1.4) * 0.45 : 0.0);
+            float prob = d > 0.0 ? 0.99 : (d > -1.0 ? 0.6 : 0.0);   // packed, no loose halo
             if (hash(id * 1.37 + 3.1) >= prob) continue;
-            float sg = 0.55 + 0.35 * hash(id + 5.1);
-            float fade = (d > 0.0 ? 1.0 : exp(d / 3.0)) * (0.55 + 0.45 * hash(id + 8.8));
+            float sg = 0.8 + 0.25 * hash(id + 5.1);
+            float fade = (d > 0.0 ? 1.0 : 0.6) * (0.75 + 0.25 * hash(id + 8.8));
             float m = splat(p - home, sg) * fade;
             if (m > best) { best = m; glint = hash(id + 2.2); gcol = grainColor(hash(id + 11.1)); }
         }

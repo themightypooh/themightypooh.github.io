@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#05080c"/>
+<path d="M22 78 Q40 50 66 58 Q92 66 108 48 Q100 72 104 92 Q88 76 66 84 Q42 92 22 78Z" fill="#9fe1cb"/>
+<circle cx="34" cy="70" r="5" fill="#05080c"/><path d="M60 36 h40 a8 8 0 0 1 8 8 v10 a8 8 0 0 1 -8 8 h-26 l-8 8 v-8 h-6 a8 8 0 0 1 -8 -8 v-10 a8 8 0 0 1 8 -8z" fill="#ffe04a"/>
+<text x="80" y="54" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle" fill="#05080c">a?</text></svg>

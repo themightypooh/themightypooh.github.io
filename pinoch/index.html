@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Pinoch</title>
+<style>
+ html,body{margin:0;height:100%;background:#05080c;overflow:hidden;font-family:monospace;color:#fff}
+ #world{position:absolute;left:0;top:0;width:100%;height:100%}
+ #panel{position:absolute;right:16px;top:16px;width:300px;background:#d0000000;background:rgba(0,0,0,.72);
+   border-radius:18px;padding:16px 18px;box-shadow:0 6px 30px rgba(0,0,0,.5);backdrop-filter:blur(6px)}
+ .lab{color:rgba(255,255,255,.6);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:10px}
+ #era{font-size:17px;font-weight:bold;margin-top:3px;color:#9fe1cb}
+ #sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px;line-height:1.35}
+ .row{display:flex;justify-content:space-between;font-size:13px;margin-top:3px}
+ .big{font-size:22px;font-weight:bold;color:#ffe04a}
+ #chart{width:264px;height:110px;display:block;margin-top:5px;background:rgba(255,255,255,.04);border-radius:8px}
+ #sample{font-size:11px;line-height:1.4;color:rgba(255,255,255,.85);max-height:118px;overflow:hidden;
+   white-space:pre-wrap;background:rgba(255,255,255,.05);border-radius:8px;padding:7px;margin-top:4px}
+ #bar{height:4px;background:rgba(255,255,255,.13);border-radius:2px;margin-top:6px}
+ #barin{height:4px;background:#9fe1cb;border-radius:2px;width:0}
+ #mode{position:absolute;left:16px;bottom:12px;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.5)}
+ #talk{position:absolute;right:16px;bottom:16px;width:300px;background:rgba(0,0,0,.72);border-radius:16px;padding:10px 12px;backdrop-filter:blur(6px)}
+ #log{max-height:110px;overflow-y:auto;font-size:11px;line-height:1.4;white-space:pre-wrap;margin-bottom:6px}
+ #log .u{color:#ffe04a} #log .p{color:#9fe1cb}
+ #talk form{display:flex;gap:6px} #talk input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font:13px monospace;padding:7px 10px;outline:none}
+ #talk button{background:#9fe1cb;color:#05080c;border:0;border-radius:10px;font:bold 12px monospace;padding:0 14px;cursor:pointer}
+ #bubble{position:absolute;max-width:300px;background:#fff;color:#111;font-size:12px;line-height:1.35;padding:9px 12px;border-radius:14px;white-space:pre-wrap;word-break:break-all;display:none;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5);max-height:160px;overflow:hidden}
+ #bubble:after{content:"";position:absolute;left:22px;bottom:-10px;border:10px solid transparent;border-top-color:#fff;border-bottom:0}
+ #swatch{position:absolute;left:14px;top:8px;display:flex;gap:6px;background:rgba(0,0,0,.55);padding:6px 8px;border-radius:10px}
+ #swatch .sw{width:18px;height:18px;border-radius:4px;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.4)}
+ #swatch .sw.on{outline:2px solid #fff;outline-offset:1px}
+ #hint{position:absolute;left:250px;top:19px;font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.5px}
+ #world{cursor:crosshair;touch-action:none}
+ /* site copy: talking needs the local server, so it's hidden here */
+ #talk{display:none!important}
+</style></head><body>
+<canvas id="world"></canvas>
+<div id="panel">
+ <div class="lab">pinoch · stage <span id="sidx"></span></div>
+ <div id="era">—</div><div id="sub"></div>
+ <div id="bar"><div id="barin"></div></div>
+ <div class="row" style="margin-top:10px"><div><div class="lab" style="margin:0">mass</div><div class="big" id="gen">0</div></div>
+  <div style="text-align:right"><div class="lab" style="margin:0">val loss</div><div class="big" id="vl">—</div></div></div>
+ <div class="row"><span>step <b id="step">—</b></span><span>loss <b id="tl">—</b></span></div>
+ <div class="row"><span>tokens <b id="tok">—</b></span><span>eaten <b id="pop">—</b></span></div>
+ <div class="lab">loss · dashed = era thresholds</div><canvas id="chart" width="528" height="220"></canvas>
+ <div class="lab">latest sample</div><div id="sample"></div>
+</div>
+<div id="swatch"></div>
+<div id="hint">tap: drop &nbsp; hold: stream &nbsp; right-click: splash &nbsp; on Pinoch: left pets, right pokes, hold+move carries him &nbsp; g: gallery</div>
+<div id="mode"></div>
+<div id="bubble"></div>
+<div id="talk"><div id="log"></div><form id="tf"><input id="ti" placeholder="say something to Pinoch…" autocomplete="off"><button>talk</button></form></div>
+<script src="plipsim.js"></script>
+<script src="evolution.js"></script>
+<script src="talk.js"></script>
+<script src="gallery.js"></script>
+<script src="stages.js"></script>
+</body></html>

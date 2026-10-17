@@ -2,7 +2,7 @@
 # noise field as SVG; the field goes flat under the centre so the lines flow around the coin slot.
 #   python3 tools/topo-wallpaper.py topo.svg
 #   magick -density 96 topo.svg -font fonts/WavegooRoundsquare.ttf -fill "#6c7280" -gravity center \
-#     -pointsize 150 -kerning 10 -annotate +0+150 "INSERT COIN" -pointsize 60 -kerning 16 -annotate +0+270 "TO CONTINUE" wall.png
+#     -pointsize 150 -kerning 10 -annotate +0+150 "INSERT COIN" -pointsize 60 -kerning 16 -annotate +0+270 "PLEASE?" wall.png
 import math, random, sys
 
 W, H = 2560, 1440

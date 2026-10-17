@@ -13,7 +13,7 @@
 .md-screen {
   --mono: "DejaVu Sans Mono", "Menlo", "Consolas", monospace;
   position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0;
-  background: #2d323d url('img/wallpaper-insert-coin.webp') center / cover no-repeat;
+  background: #2d323d url('img/wallpaper-insert-coin.webp?v=3') center / cover no-repeat;
   overflow: hidden; user-select: none; -webkit-user-select: none; font-family: var(--mono);
 }
 .md-screen * { box-sizing: border-box; }

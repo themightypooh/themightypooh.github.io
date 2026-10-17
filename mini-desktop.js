@@ -3,9 +3,12 @@
 //   Bar.qml + DotSurface.qml (bar), Launcher.qml (start menu), goonotes/ (notes, cabinet,
 //   corkboard), hourglass/shell.qml, and ~/.config/quickshell/visits.
 // Widget positions are the ones saved on the real desktop.
-(() => {
+// mountMiniDesktop({ w, h }): w x h virtual pixels (default 1920x1080). Widgets saved on the right of the
+// real desktop keep their distance from the right edge, so a wider screen (phone.html) just spreads out.
+window.mountMiniDesktop = opts => {
   'use strict';
-  const SW = 1920, SH = 1080;
+  opts = opts || {};
+  const SW = opts.w || 1920, SH = opts.h || 1080, DX = SW - 1920;
   const $ = (s, r = document) => r.querySelector(s);
   const screenEl = $('#md-screen'), frame = $('#md-frame'), info = $('#md-info');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,7 +39,12 @@
 
   // ---- the virtual screen: real pixels, scaled to the frame -----------------------
   let scale = 1;
-  function fit() { scale = frame.clientWidth / SW; screenEl.style.transform = `scale(${scale})`; }
+  screenEl.style.width = SW + 'px'; screenEl.style.height = SH + 'px';
+  function fit() {   // contain: letterbox if the frame's shape drifts (phone bars hiding, fullscreen)
+    scale = Math.min(frame.clientWidth / SW, frame.clientHeight / SH) || frame.clientWidth / SW;
+    const ox = (frame.clientWidth - SW * scale) / 2, oy = (frame.clientHeight - SH * scale) / 2;
+    screenEl.style.transform = `translate(${ox}px,${oy}px) scale(${scale})`;
+  }
   new ResizeObserver(fit).observe(frame); fit();
   const pointer = { x: -1e4, y: -1e4, in: false };
   function toScreen(e) { const r = screenEl.getBoundingClientRect(); return { x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale }; }
@@ -88,7 +96,7 @@
     linework: ['Linework', 'My sketching app (Qt 6 + C++). Draw anywhere, then hold still at the end of a stroke and it snaps to a clean line, circle or box. Pick tools from the dial.'],
     drawer: ['pinned apps', 'The drawer grows up out of the dots and shoves them aside.']
   };
-  function explain(k) { const [t, b] = blurbs[k]; info.innerHTML = ''; const s = el('strong', '', info); s.textContent = t; info.append(b); }
+  function explain(k) { if (!info) return; const [t, b] = blurbs[k]; info.innerHTML = ''; const s = el('strong', '', info); s.textContent = t; info.append(b); }
   // why I made each thing: a speech bubble that grows off whatever you hover
   const whys = {
     bar: 'Stock Plasma felt dead, so I wrote my own shell from scratch. Now the taskbar is sand riding a wave and I get to shove it around.',
@@ -465,7 +473,7 @@
     fanGL.gl.texImage2D(fanGL.gl.TEXTURE_2D, 0, fanGL.gl.RGBA, 1, 1, 0, fanGL.gl.RGBA, fanGL.gl.UNSIGNED_BYTE, new Uint8Array([45, 50, 61, 255]));
     const img = new Image();
     img.onload = () => { const gl = fanGL.gl; gl.bindTexture(gl.TEXTURE_2D, wallTex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); hasWall = 1; };
-    img.src = 'img/wallpaper-insert-coin.webp';
+    img.src = 'img/wallpaper-insert-coin.webp?v=3';
   }
   const SVGNS = 'http://www.w3.org/2000/svg';
   const bands = document.createElementNS(SVGNS, 'svg'); bands.setAttribute('class', 'bands'); bands.setAttribute('viewBox', `0 0 ${SW} ${SH}`); menuEl.append(bands);
@@ -812,7 +820,7 @@
     const dragOut = 50, crackOut = 10, hoverOut = 120, maxFiles = 6, fileStep = (hoverOut - 16) / (maxFiles - 1), tabH = 14, stagger = 30, shadow = 8;
     const ox = Math.round(hoverOut * kx) + 12, oy = topH + 6, slotW = fw - pad * 2;
     const W = ox + fw + sideW + shadow + 6, H = oy + fh + Math.round(hoverOut * ky) + shadow + 8;
-    const c = { x: 1624, y: 230, cats: ['todo', 'ideas', 's&box'], hoverIdx: -1, thunk: -1, bump: 0, dirty: true };
+    const c = { x: 1624 + DX, y: 230, cats: ['todo', 'ideas', 's&box'], hoverIdx: -1, thunk: -1, bump: 0, dirty: true };
     c.files = [
       [{ t: 'laundry', c: 4 }, { t: 'fix the bike', c: 1 }, { t: 'reply to emails', c: 0 }],
       [{ t: 'band names', c: 2 }, { t: 'pizza toppings', c: 3 }, { t: 'weekend trip', c: 4 }, { t: 'new hobby', c: 0 }],
@@ -884,6 +892,7 @@
       const target = dragNote ? c.drawerAt(dragAt.x, dragAt.y) : -1;
       const order = drawers.map((d, i) => ({ d, i, out: Math.max(0, d.slide.v - (c.thunk === i ? c.bump * 8 : 0)) })).sort((a, b) => a.out - b.out);
       let tabN = 0;
+      const covers = [], owned = [];   // per painted drawer: area it covers, DOM text it owns
       agaPaint(canvas, W, H, ctx => {
         // body: shadow, side, top, front with its highlights, feet
         poly(ctx, [ox + shadow, oy + fh + shadow, ox + shadow, oy + shadow, ox + sideW + shadow, oy - topH + shadow, ox + fw + sideW + shadow, oy - topH + shadow, ox + fw + sideW + shadow, oy + fh - topH + shadow, ox + fw + shadow, oy + fh + shadow], 'rgba(0,0,0,.5)');
@@ -904,7 +913,7 @@
             poly(ctx, [fx, fy, sx, sy, sx + slotW, sy, fx + slotW, fy], vgrad(ctx, sy, fy, [[0, '#141418'], [1, '#42454b']]), BLACK);
             poly(ctx, [fx + slotW, fy, sx + slotW, sy, sx + slotW, sy + dh, fx + slotW, fy + dh], vgrad(ctx, fy, fy + dh, [[0, '#8f949a'], [1, '#5b5f65']]), BLACK);
           }
-          const n = Math.min(files.length, maxFiles);
+          const n = Math.min(files.length, maxFiles), mine = [];
           if (showing || out > 1) for (let idx = 0; idx < n; idx++) {
             const k = n - 1 - idx, g = folderAt(fx, fy, k);
             if (g.t > out - 4) continue;
@@ -913,7 +922,7 @@
             rectB(ctx, g.tx, g.by - 22, g.tw, tabH, k === n - 1 && more > 1 ? '#c5c8cc' : NOTE_PAL[files[k].c % 5].a);
             let tl = tabPool[tabN]; if (!tl) tl = tabPool[tabN] = el('div', 'cab-text tab', root);
             tl.style.display = ''; tl.style.left = (g.tx + 5) + 'px'; tl.style.top = (g.by - 22) + 'px'; tl.style.width = (g.tw - 9) + 'px';
-            tl.textContent = k === n - 1 && more > 1 ? '+' + more + ' MORE' : files[k].t.toUpperCase(); tl.style.zIndex = 2 + i; tabN++;
+            tl.textContent = k === n - 1 && more > 1 ? '+' + more + ' MORE' : files[k].t.toUpperCase(); tl.style.zIndex = 2 + i; mine.push([tl, g.by - 22, tabH]); tabN++;
           }
           rectB(ctx, fx, fy, slotW, dh, vgrad(ctx, fy, fy + dh, [[0, pointed || hot ? '#ccd0d4' : '#adb1b6'], [1, '#6b6f74']]), hot ? ORANGE : BLACK, hot ? 4 : 2);
           ctx.fillStyle = WHITE; ctx.fillRect(fx + 2, fy + 2, slotW - 4, 2); ctx.fillRect(fx + 2, fy + 2, 2, dh - 4);
@@ -926,10 +935,24 @@
           const lb = labels[i];
           lb.name.style.left = fx + 'px'; lb.name.style.top = (fy + 12) + 'px'; lb.name.style.width = slotW + 'px'; lb.name.style.padding = '0 18px'; lb.name.textContent = c.cats[i].toUpperCase(); lb.name.style.zIndex = 3 + i;
           lb.count.style.left = fx + 'px'; lb.count.style.top = (fy + 42) + 'px'; lb.count.style.width = slotW + 'px'; lb.count.textContent = files.length + ' FILED'; lb.count.style.zIndex = 3 + i;
+          mine.push([lb.name, fy + 12, 24], [lb.count, fy + 42, 12]); owned.push(mine);
+          covers.push(out > 0.5 ? { x0: fx, x1: sx + slotW, y0: (showing || out > 1) && n ? sy - 24 : sy, y1: fy + dh } : null);
           hits[i].style.left = (fx - pad) + 'px'; hits[i].style.top = (fy - gap / 2) + 'px'; hits[i].style.width = (slotW + pad * 2) + 'px'; hits[i].style.height = (dh + gap) + 'px'; hits[i].style.zIndex = 1;
         }
       });
       for (let k = tabN; k < tabPool.length; k++) tabPool[k].style.display = 'none';
+      // the text is DOM over one canvas, so canvas pixels can't hide it: clip each drawer's text
+      // against every drawer painted after it (i.e. slid further out, in front of it)
+      owned.forEach((list, p) => list.forEach(([node, t, h]) => {
+        let top = 0, bot = 0;
+        const x0 = parseFloat(node.style.left) || 0, x1 = x0 + (parseFloat(node.style.width) || slotW);
+        for (let q = p + 1; q < covers.length; q++) {
+          const cv = covers[q]; if (!cv || cv.x1 <= x0 || cv.x0 >= x1 || cv.y1 <= t || cv.y0 >= t + h) continue;
+          if (cv.y0 <= t) top = Math.max(top, cv.y1 - t); else bot = Math.max(bot, t + h - cv.y0);
+        }
+        node.style.visibility = top + bot >= h ? 'hidden' : '';
+        node.style.clipPath = top || bot ? `inset(${Math.max(0, top)}px 0 ${Math.max(0, bot)}px 0)` : '';
+      }));
     }
     return c;
   })();
@@ -1000,10 +1023,10 @@
   // VISITS (~/.config/quickshell/visits)
   // =================================================================================
   const visits = (() => {
-    const root = el('div', 'visits', screenEl); root.style.left = '1642px'; root.style.top = '40px';
+    const root = el('div', 'visits', screenEl); root.style.left = (1642 + DX) + 'px'; root.style.top = '40px';
     root.innerHTML = '<div class="vbox"><canvas width="226" height="14"></canvas><div class="vlabel">PORTFOLIO VISITS</div><div class="vnum">...<span class="vplus">+1</span></div><div class="vsub">LIVE FROM THIS SITE</div></div>';
     root.tabIndex = 0; root.setAttribute('role', 'button'); root.setAttribute('aria-label', 'Portfolio visit counter');
-    blurb(root, 'visits'); draggable(root, { x: 1642, y: 40 }, 230, 120);
+    blurb(root, 'visits'); draggable(root, { x: 1642 + DX, y: 40 }, 230, 120);
     const g = root.querySelector('canvas').getContext('2d');
     for (let i = 0; i < 700; i++) { const x = Math.random() * 226, y = Math.random() * 14; if (y < 14 * (0.4 + 0.3 * Math.sin(x / 18))) continue; g.fillStyle = GRAINS[i % 3]; g.globalAlpha = 0.5 + Math.random() * 0.5; g.fillRect(x, y, 2, 2); }
     const num = root.querySelector('.vnum'), plus = root.querySelector('.vplus'), sub = root.querySelector('.vsub');
@@ -1067,8 +1090,8 @@
   for (let i = 0; i <= STEPS; i++) shapes.push(shapeAt(i / STEPS));
   function shapeLerp(f) { const x = clamp(f, 0, 1) * STEPS, i = Math.min(STEPS - 1, Math.floor(x)), t = x - i; return shapes[i].map((v, k) => v + (shapes[i + 1][k] - v) * t); }
 
-  const hgEl = el('div', 'hourglass', screenEl); hgEl.style.left = '1450px'; hgEl.style.top = '180px';
-  blurb(hgEl, 'hourglass'); draggable(hgEl, { x: 1450, y: 180 }, 200, 400);
+  const hgEl = el('div', 'hourglass', screenEl); hgEl.style.left = (1450 + DX) + 'px'; hgEl.style.top = '180px';
+  blurb(hgEl, 'hourglass'); draggable(hgEl, { x: 1450 + DX, y: 180 }, 200, 400);
   const glassEl = el('div', 'glass', hgEl); glassEl.tabIndex = 0; glassEl.setAttribute('role', 'button'); glassEl.setAttribute('aria-label', 'Hourglass: start or pause');
   const glassCanvas = el('canvas', '', glassEl); glassCanvas.width = hg.gw; glassCanvas.height = hg.gh;
   const glassGL = glProgram(glassCanvas, MD_SHADERS.GLASS_FRAG);
@@ -1116,7 +1139,7 @@
     hg.dirty = false;
     const [topY, dip, craterR, botY, heap, heapR] = shapeLerp(hg.frac), s = glassGL;
     s.set('size', [hg.gw, hg.gh]); s.set('neckY', hg.neckY); s.set('neckLen', hg.neckLen); s.set('neckW', hg.neckW); s.set('bulbH', hg.bulbH); s.set('bulbR', hg.bulbR);
-    s.set('cell', 2.8); s.set('pitch', 3.0); s.set('time', hg.clock); s.set('topY', topY); s.set('dip', dip); s.set('crater', craterR);
+    s.set('cell', 2.3); s.set('pitch', 3.0); s.set('time', hg.clock); s.set('topY', topY); s.set('dip', dip); s.set('crater', craterR);
     s.set('topShift', topY < hg.neckY ? topY - hg.fullLevel : 0); s.set('botY', botY); s.set('heap', heap); s.set('heapR', heapR);
     s.set('stream', hg.mode === 'running' || hg.mode === 'pouring' || hg.tailing || hg.mode === 'paused' ? 1 : 0);
     s.set('flowFrom', hg.flowFrom); s.set('flowTo', hg.flowTo); s.set('flash', hg.flash); s.set('dim', hg.mode === 'paused' ? 1 : 0); s.set('hover', hg.hov);
@@ -1130,7 +1153,7 @@
   // =================================================================================
   const lw = (() => {
     const T = { s0: '#141418', s2: '#42454b', s4: '#757980', s5: '#8f949a', s6: '#aaaeb3', s8: '#dfe1e3', s9: '#f4f5f6', orange: '#ff8800', paper: '#efeee6' };
-    const w = { x: 370, y: 110, ww: 1180, wh: 720, open: false };
+    const w = { x: 370 + Math.round(DX / 2), y: 110, ww: 1180, wh: 720, open: false };
     const root = el('div', 'lw-win', screenEl);
     const title = el('div', 'lw-title', root, 'Linework');
     const wb = el('div', 'lw-wbtns', title);
@@ -1419,4 +1442,5 @@
   document.fonts.ready.then(() => { tickClock(); buildCatText(); notes.forEach(paintNote); });
   tickClock(); buildCatText(); setInterval(tickClock, 30000);
   requestAnimationFrame(frameLoop);
-})();
+};
+if (!window.MD_MANUAL) window.mountMiniDesktop();

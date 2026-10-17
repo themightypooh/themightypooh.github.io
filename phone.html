@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#090a0d">
+<title>wavegoo on your phone</title>
+<meta name="description" content="The wavegoo desktop, fullscreen and sideways on your phone.">
+<link rel="stylesheet" href="mini-desktop.css?v=12">
+<style>
+  html, body { margin: 0; height: 100%; background: #090a0d; overflow: hidden; overscroll-behavior: none; }
+  body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  #md-frame { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; aspect-ratio: auto; border: 0; background: #090a0d; }
+
+  .gate { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+    padding: 24px; box-sizing: border-box; text-align: center; color: #dfe4ec; font-family: Roundsquare, monospace;
+    background: #090a0d url('img/wallpaper-insert-coin.webp?v=3') center / cover no-repeat; }
+  .gate::before { content: ''; position: absolute; inset: 0; background: #090a0dcc; z-index: -1; }
+  .gate[hidden] { display: none; }
+  .gate h1 { margin: 0; font-weight: 400; font-size: clamp(40px, 12vw, 72px); letter-spacing: 2px;
+    background: linear-gradient(100deg, #7f77dd, #ff4fd8 45%, #35e6ff 75%, #1d9e75); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .gate p { margin: 0; max-width: 30ch; font: 15px/1.5 system-ui, sans-serif; color: #9aa1ad; }
+  .gate .go { font: 20px Roundsquare, monospace; letter-spacing: 2px; color: #090a0d; background: linear-gradient(100deg, #35e6ff, #7f77dd);
+    border: 0; border-radius: 12px; padding: 16px 34px; cursor: pointer; }
+  .gate .back { font: 14px system-ui, sans-serif; color: #9aa1ad; }
+  .turn { display: none; flex-direction: column; align-items: center; gap: 14px; }
+  .turn svg { width: 64px; height: 64px; animation: tip 2.4s cubic-bezier(.5,0,.3,1) infinite; }
+  @keyframes tip { 0%, 25% { transform: rotate(0deg); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+  @media (orientation: portrait) { .gate.started .turn { display: flex; } .gate.started .go { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .turn svg { animation: none; transform: rotate(-90deg); } }
+
+  .exit { position: fixed; z-index: 90; top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right));
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid #ffffff33; background: #090a0d99; color: #dfe4ec;
+    font: 18px/32px system-ui, sans-serif; text-align: center; text-decoration: none; }
+  .exit[hidden] { display: none; }
+</style>
+</head>
+<body>
+<div class="md-frame" id="md-frame">
+  <div class="md-screen" id="md-screen" aria-label="The wavegoo desktop"></div>
+</div>
+<a class="exit" id="exit" href="index.html#desktop" aria-label="Back to the portfolio" hidden>×</a>
+
+<div class="gate" id="gate">
+  <h1>WAVEGOO</h1>
+  <p>My desktop shell, the real thing, fullscreen on your phone. Tap the orb for the start menu, drag notes into the cabinet, flip the hourglass, draw something.</p>
+  <button class="go" id="go">START</button>
+  <div class="turn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#35e6ff" stroke-width="1.6" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18.5h2"/></svg>
+    <p>Turn your phone sideways.</p>
+  </div>
+  <a class="back" href="index.html#desktop">← back to the portfolio</a>
+</div>
+
+<script>window.MD_MANUAL = true;</script>
+<script src="mini-desktop-shaders.js?v=12"></script>
+<script src="mini-desktop.js?v=15"></script>
+<script>
+(() => {
+  const gate = document.getElementById('gate'), go = document.getElementById('go'), exit = document.getElementById('exit');
+  let mounted = false, settle = 0;
+  const landscape = () => innerWidth > innerHeight;
+  // the desktop is 1080 tall in its own pixels and as wide as the phone's shape, so it fills the screen
+  function mount() {
+    if (mounted || !landscape()) return;
+    mounted = true; gate.hidden = true; exit.hidden = false;
+    window.mountMiniDesktop({ w: Math.max(1920, Math.round(1080 * innerWidth / innerHeight)), h: 1080 });
+  }
+  // wait for the browser bars and fullscreen to finish moving before measuring
+  function later() { clearTimeout(settle); settle = setTimeout(mount, 350); }
+  go.addEventListener('click', async () => {
+    gate.classList.add('started');
+    try { if (document.fullscreenEnabled && !document.fullscreenElement) await document.documentElement.requestFullscreen({ navigationUI: 'hide' }); } catch (e) {}
+    try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch (e) {}
+    later();
+  });
+  addEventListener('resize', () => { if (gate.classList.contains('started')) later(); });
+  exit.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); });
+})();
+</script>
+</body>
+</html>
