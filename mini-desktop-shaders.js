@@ -12,6 +12,7 @@ void main() { gl_Position = vec4(a, 0.0, 1.0); }`;
   const COMMON = `#version 300 es
 precision highp float;
 out vec4 fragColor;
+uniform float res;   // canvas pixels per screen pixel: below 1 on phones, which draw fewer pixels
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 vec2 hash2(vec2 p) { return vec2(hash(p + 17.3), hash(p * 1.91 + 41.7)); }
 float noise(vec2 p) {
@@ -99,7 +100,7 @@ vec3 phys(vec2 q) {
     return t.a > 0.5 ? vec3((t.rg * 255.0 - 128.0) / 8.0, t.b) : vec3(0.0);
 }
 void main() {
-    vec2 p = vec2(gl_FragCoord.x, size.y - gl_FragCoord.y);
+    vec2 p = vec2(gl_FragCoord.x / res, size.y - gl_FragCoord.y / res);
     if (gooLive < 0.5 && p.y < min(barTop - 6.0, box.y) - 8.0 * wave - 40.0) { fragColor = vec4(0.0); return; }
     vec4 col = vec4(0.0);
     {   // back wave
@@ -254,7 +255,7 @@ vec2 place(vec2 home, float layer, bool front) {
     return c;
 }
 void main() {
-    vec2 p = vec2(gl_FragCoord.x, size.y - gl_FragCoord.y) + offset;
+    vec2 p = vec2(gl_FragCoord.x / res, size.y - gl_FragCoord.y / res) + offset;
     vec2 b = p - vec2(0.0, barWinTop);
     if (shapeFlat(b, 0.0) > 55.0) { fragColor = vec4(0.0); return; }
     vec2 d = toD(b);
@@ -387,7 +388,7 @@ float sandDepth(vec2 h) {
 }
 float splat(vec2 d, float sg) { return exp(-dot(d, d) / (2.0 * sg * sg)); }
 void main() {
-    vec2 p = vec2(gl_FragCoord.x, size.y - gl_FragCoord.y);
+    vec2 p = vec2(gl_FragCoord.x / res, size.y - gl_FragCoord.y / res);
     float cx = size.x * 0.5;
     float gy = clamp((p.y - glassTop() + 14.0) / (glassBot() - glassTop() + 28.0), 0.0, 1.0);
     vec3 liquid = mix(gradA.rgb, gradB.rgb, gy);

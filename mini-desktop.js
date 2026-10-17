@@ -16,7 +16,7 @@ window.mountMiniDesktop = opts => {
   const bus = new EventTarget(), emit = k => bus.dispatchEvent(new Event(k));   // the tour listens for these
   // phones and weak machines: the shaders run at a lower frame rate (looks the same, saves battery and heat)
   const LITE = matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory || 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4 ||
-    !!(navigator.connection && navigator.connection.saveData);
+    !!(navigator.connection && navigator.connection.saveData) || /[?&]lite=1/.test(location.search);   // ?lite=1 forces it, for testing
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   function el(tag, cls, parent, html) {
@@ -45,8 +45,18 @@ window.mountMiniDesktop = opts => {
   // ---- the virtual screen: real pixels, scaled to the frame -----------------------
   let scale = 1;
   screenEl.style.width = SW + 'px'; screenEl.style.height = SH + 'px';
+  // Shader canvases: on phones and weak machines they draw only as many pixels as actually reach the
+  // screen (the desktop is shrunk to a third or less there), instead of the full 1920-wide size.
+  const shaderCanvases = [];
+  function shaderSized(c, vw, vh, onResize) { c.vw = vw; c.vh = vh; c.onResize = onResize; shaderCanvases.push(c); sizeShader(c); }
+  function shaderRes() { return LITE ? clamp(scale * Math.min(devicePixelRatio || 1, 1.5), 0.35, 1) : 1; }
+  function sizeShader(c) {
+    const r = shaderRes(), w = Math.max(1, Math.round(c.vw * r)), h = Math.max(1, Math.round(c.vh * r));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; if (c.onResize) c.onResize(); }
+  }
   function fit() {   // contain: letterbox if the frame's shape drifts (phone bars hiding, fullscreen)
     scale = Math.min(frame.clientWidth / SW, frame.clientHeight / SH) || frame.clientWidth / SW;
+    shaderCanvases.forEach(sizeShader);
     const ox = (frame.clientWidth - SW * scale) / 2, oy = (frame.clientHeight - SH * scale) / 2;
     screenEl.style.transform = `translate(${ox}px,${oy}px) scale(${scale})`;
   }
@@ -203,7 +213,7 @@ window.mountMiniDesktop = opts => {
       gl,
       set(n, v) { const l = u(n); if (l === null) return; if (typeof v === 'number') gl.uniform1f(l, v); else if (v.length === 2) gl.uniform2fv(l, v); else gl.uniform4fv(l, v); },
       tex(n, unit, t) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.uniform1i(u(n), unit); },
-      draw() { gl.viewport(0, 0, canvas.width, canvas.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3); }
+      draw() { gl.uniform1f(u('res'), canvas.width / (canvas.vw || canvas.width)); gl.viewport(0, 0, canvas.width, canvas.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3); }
     };
   }
   function makeTex(gl, linear) {
@@ -219,7 +229,7 @@ window.mountMiniDesktop = opts => {
   // =================================================================================
   const barH = 46, headroom = 84, barTop = headroom, BAR_Y = SH - headroom - barH;   // bar window top on screen
   const barEl = el('div', 'bar', screenEl);
-  const barCanvas = el('canvas', '', barEl); barCanvas.width = SW; barCanvas.height = headroom + barH;
+  const barCanvas = el('canvas', '', barEl); barCanvas.width = SW; barCanvas.height = headroom + barH; shaderSized(barCanvas, SW, headroom + barH);
   const barGL = glProgram(barCanvas, MD_SHADERS.BAR_FRAG);
   el('div', 'bar-strip', barEl);
   blurb(barEl.querySelector('.bar-strip'), 'bar');
@@ -471,6 +481,7 @@ window.mountMiniDesktop = opts => {
   const menuEl = el('div', 'launcher', screenEl);
   const boxW = L.ox + L.band[1] + 16 + 220, boxH = L.band[1] + 16 + 220 + (SH - L.oy);
   const fanCanvas = el('canvas', '', menuEl); fanCanvas.width = boxW; fanCanvas.height = boxH; fanCanvas.style.top = (SH - boxH) + 'px';
+  fanCanvas.style.width = boxW + 'px'; fanCanvas.style.height = boxH + 'px'; shaderSized(fanCanvas, boxW, boxH);
   const fanGL = glProgram(fanCanvas, MD_SHADERS.FAN_FRAG);
   let wallTex = null, hasWall = 0;
   if (fanGL) {
@@ -1104,7 +1115,7 @@ window.mountMiniDesktop = opts => {
   const hgEl = el('div', 'hourglass', screenEl); hgEl.style.left = (1450 + DX) + 'px'; hgEl.style.top = '180px';
   blurb(hgEl, 'hourglass'); draggable(hgEl, { x: 1450 + DX, y: 180 }, 200, 400);
   const glassEl = el('div', 'glass', hgEl); glassEl.tabIndex = 0; glassEl.setAttribute('role', 'button'); glassEl.setAttribute('aria-label', 'Hourglass: start or pause');
-  const glassCanvas = el('canvas', '', glassEl); glassCanvas.width = hg.gw; glassCanvas.height = hg.gh;
+  const glassCanvas = el('canvas', '', glassEl); glassCanvas.width = hg.gw; glassCanvas.height = hg.gh; shaderSized(glassCanvas, hg.gw, hg.gh, () => { hg.dirty = true; });
   const glassGL = glProgram(glassCanvas, MD_SHADERS.GLASS_FRAG);
   const readout = el('div', 'readout', hgEl), hgHint = el('div', 'hghint', hgEl), chips = el('div', 'chips', hgEl);
   [1, 5, 10, 25, 60].forEach(m => { const b = el('button', '', chips); b.textContent = m < 60 ? m + 'M' : '1H'; b.style.color = '#35e6ff'; b.style.borderColor = 'rgba(53,230,255,.6)'; b.style.setProperty('--chip-hover', 'rgba(53,230,255,.25)'); b.onclick = () => hgStart(m * 60); });
