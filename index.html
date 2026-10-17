@@ -307,7 +307,7 @@
   // visit counter (abacus.jasoncameron.dev, no account): counts each browser at most once a day,
   // so refreshing doesn't inflate it. Read back by the desktop widget in ~/.config/quickshell/visits.
   (function () {
-    if (!/github\.io$/.test(location.hostname)) return;   // only the live site counts, not local previews
+    if (!/(github\.io|is-a\.dev)$/.test(location.hostname)) return;   // only the live site counts, not local previews
     try {
       var day = new Date().toISOString().slice(0, 10);
       if (localStorage.getItem("counted") === day) return;
