@@ -12,6 +12,7 @@ window.mountMiniDesktop = opts => {
   const $ = (s, r = document) => r.querySelector(s);
   const screenEl = $('#md-screen'), frame = $('#md-frame'), info = $('#md-info');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const COARSE = matchMedia('(pointer: coarse)').matches;   // touch screen
   // phones and weak machines: the shaders run at a lower frame rate (looks the same, saves battery and heat)
   const LITE = matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory || 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4 ||
     !!(navigator.connection && navigator.connection.saveData);
@@ -755,12 +756,16 @@ window.mountMiniDesktop = opts => {
     n.btn.delete.onclick = () => { if (n.armed) removeNote(n); else { n.armed = true; n.btn.delete.querySelector('.hint').textContent = 'CLICK AGAIN TO DELETE'; setTimeout(() => { n.armed = false; n.btn.delete.querySelector('.hint').textContent = 'DELETE'; }, 2500); } };
     n.btn.away.onclick = () => putAway(n);
     n.chip.onclick = () => { const cs = ['', ...cab.cats]; n.cat = cs[(cs.indexOf(n.cat) + 1) % cs.length]; paintNote(n); };
-    head.addEventListener('pointerdown', e => {
+    // mouse: drag by the header. Touch: the header is a few pixels tall once shrunk, so the whole note
+    // drags; a tap still focuses the text, and once you're typing, dragging in the text doesn't move it.
+    (COARSE ? root : head).addEventListener('pointerdown', e => {
       if (e.button !== 0 || e.target.closest('button')) return;
-      const p0 = toScreen(e), x0 = n.x, y0 = n.y; head.setPointerCapture(e.pointerId); let moved = false;
-      const move = ev => { const p = toScreen(ev); if (!moved) { if (Math.hypot(p.x - p0.x, p.y - p0.y) < 6) return; moved = true; dragNote = n; whyHide(); } n.x = clamp(Math.round(x0 + p.x - p0.x), 0, SW - 300); n.y = clamp(Math.round(y0 + p.y - p0.y), 0, SH - 280); dragAt = p; placeNote(n); };
-      const up = ev => { head.removeEventListener('pointermove', move); head.removeEventListener('pointerup', up); head.removeEventListener('pointercancel', up); if (moved) { dragNote = null; noteDropped(n, toScreen(ev)); } };
-      head.addEventListener('pointermove', move); head.addEventListener('pointerup', up); head.addEventListener('pointercancel', up);
+      if (COARSE && e.target === n.bodyEl && document.activeElement === n.bodyEl) return;
+      const p0 = toScreen(e), x0 = n.x, y0 = n.y; let moved = false;
+      if (!COARSE) head.setPointerCapture(e.pointerId);   // touch: no capture, or the tap couldn't focus the text
+      const move = ev => { if (ev.pointerId !== e.pointerId) return; const p = toScreen(ev); if (!moved) { if (Math.hypot(p.x - p0.x, p.y - p0.y) < (COARSE ? 10 : 6)) return; moved = true; dragNote = n; whyHide(); if (COARSE) n.bodyEl.blur(); } n.x = clamp(Math.round(x0 + p.x - p0.x), 0, SW - 300); n.y = clamp(Math.round(y0 + p.y - p0.y), 0, SH - 280); dragAt = p; placeNote(n); };
+      const up = ev => { if (ev.pointerId !== e.pointerId) return; removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); if (moved) { dragNote = null; noteDropped(n, toScreen(ev)); } };
+      addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
     });
     root.addEventListener('pointerenter', () => { n.hover = true; explain('note'); });
     whyOn(root, 'note');
@@ -888,6 +893,7 @@ window.mountMiniDesktop = opts => {
       let busy = c.dirty; c.dirty = false;
       drawers.forEach((d, i) => { d.slide.to = want(i); if (d.slide.busy) { d.slide.step(dt); busy = true; } });
       if (c.thunk >= 0) { const e = (performance.now() - c.bumpT) / 470; c.bump = e < 0.19 ? e / 0.19 : Math.max(0, 1 - (e - 0.19) / 0.81); if (e >= 1) { c.thunk = -1; c.bump = 0; } busy = true; }
+      c.moving = busy;   // the main loop runs at full rate while drawers slide (lite mode would otherwise drop them to 10fps)
       if (busy) paint();
     };
     function paint() {
@@ -1434,7 +1440,7 @@ window.mountMiniDesktop = opts => {
     requestAnimationFrame(frameLoop);
     if (!visible || document.hidden) { last = now; return; }
     let dt = Math.min((now - last) / 1000, 0.1); last = now;
-    const fast = pointer.in && pointer.y > SH - 260 || dots.hov > 0.01 || dots.gooBlobs.length > 0 || dots.awake || L.shown || drawer.w.busy || drawer.h.busy || hg.mode === 'running' && hg.frac > 0.98;
+    const fast = pointer.in && pointer.y > SH - 260 || dots.hov > 0.01 || dots.gooBlobs.length > 0 || dots.awake || L.shown || drawer.w.busy || drawer.h.busy || cab.moving || hg.mode === 'running' && hg.frac > 0.98;
     if (!fast) { idleAcc += dt; if (idleAcc < (reduced ? 0.25 : LITE ? 0.1 : 0.05)) return; dt = idleAcc; idleAcc = 0; }
     else if (LITE) { liteAcc += dt; if (liteAcc < 1 / 30) return; dt = Math.min(liteAcc, 0.1); liteAcc = 0; }
     barAdvance(reduced ? 0 : dt); barDraw();

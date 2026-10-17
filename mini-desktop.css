@@ -84,6 +84,7 @@ button.sicon:hover::before { background: #1c2028e6; }
 .note-head { position: absolute; left: 0; top: 0; width: 294px; height: 34px; cursor: grab; }
 .note-head:active { cursor: grabbing; }
 .note-head, .lw-title, .cabinet, .board, .hourglass, .visits { touch-action: none; }
+@media (pointer: coarse) { .note, .note-body { touch-action: none; } }
 .md-screen .dragging, .md-screen .dragging * { cursor: grabbing !important; }
 .md-screen .chip { position: absolute; left: 10px; top: 7px; height: 20px; width: max-content; padding: 0 10px 0 8px; font: bold 11px/20px var(--mono); color: #757980; cursor: pointer; white-space: nowrap; }
 .md-screen .chip.set { color: #141418; }
